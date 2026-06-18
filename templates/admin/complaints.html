@@ -1,0 +1,328 @@
+{% extends "base.html" %}
+{% block title %}Manage Complaints – Admin{% endblock %}
+
+{% block head_extra %}
+<style>
+body {
+  background: linear-gradient(135deg, #E8F5E8 0%, #C8E6C9 50%, #A5D6A7 100%) !important;
+  background-attachment: fixed !important;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #E8F5E8 0%, #C8E6C9 50%, #A5D6A7 100%);
+  z-index: -2;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 20% 80%, rgba(129,199,132,0.3) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(165,214,167,0.3) 0%, transparent 50%),
+              radial-gradient(circle at 40% 60%, rgba(200,230,201,0.3) 0%, transparent 50%);
+  z-index: -1;
+  animation: bgShift 20s ease-in-out infinite;
+}
+
+@keyframes bgShift {
+  0%,100% { transform: translateX(0) translateY(0); }
+  25%     { transform: translateX(-20px) translateY(-10px); }
+  50%     { transform: translateX(20px) translateY(10px); }
+  75%     { transform: translateX(-10px) translateY(5px); }
+}
+
+.page-header {
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(76,175,80,0.2);
+  border-radius: 20px;
+  padding: 30px 40px;
+  margin: 30px 0 20px;
+}
+
+.page-title { font-size: 2rem; font-weight: 900; color: #1B5E20; }
+
+.stats-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+
+.stat-pill {
+  background: rgba(255,255,255,0.85);
+  border: 2px solid rgba(76,175,80,0.2);
+  border-radius: 14px;
+  padding: 14px 24px;
+  text-align: center;
+  min-width: 120px;
+  flex: 1;
+}
+
+.stat-pill .num { font-size: 1.8rem; font-weight: 900; color: #1B5E20; }
+.stat-pill .lbl { font-size: 0.8rem; font-weight: 700; color: #555; }
+
+.complaint-card {
+  background: rgba(255,255,255,0.9);
+  border: 2px solid rgba(76,175,80,0.15);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 16px;
+  transition: all 0.3s;
+}
+
+.complaint-card.unread { border-left: 5px solid #FF9800; }
+.complaint-card:hover { box-shadow: 0 10px 30px rgba(76,175,80,0.2); }
+
+.status-badge {
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.status-pending   { background: #FFF3E0; color: #E65100; border: 2px solid #FF9800; }
+.status-reviewing { background: #E3F2FD; color: #0D47A1; border: 2px solid #2196F3; }
+.status-resolved  { background: #E8F5E9; color: #1B5E20; border: 2px solid #4CAF50; }
+.status-closed    { background: #F5F5F5; color: #616161; border: 2px solid #9E9E9E; }
+
+.category-tag {
+  background: rgba(76,175,80,0.1);
+  color: #2E7D32;
+  border: 1px solid rgba(76,175,80,0.3);
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.user-tag {
+  background: rgba(33,150,243,0.1);
+  color: #0D47A1;
+  border: 1px solid rgba(33,150,243,0.3);
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.reply-form {
+  background: rgba(33,150,243,0.05);
+  border: 2px solid rgba(33,150,243,0.2);
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 14px;
+  display: none;
+}
+
+.reply-form.show { display: block; }
+
+.form-control {
+  border: 2px solid rgba(76,175,80,0.3);
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+.form-control:focus {
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 3px rgba(76,175,80,0.15);
+}
+
+.form-select {
+  border: 2px solid rgba(76,175,80,0.3);
+  border-radius: 10px;
+  padding: 8px 14px;
+}
+
+.btn-reply {
+  background: linear-gradient(135deg, #1565C0 0%, #2196F3 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 20px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-reply:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(33,150,243,0.4); }
+
+.btn-toggle-reply {
+  background: rgba(33,150,243,0.1);
+  color: #1565C0;
+  border: 2px solid rgba(33,150,243,0.3);
+  border-radius: 10px;
+  padding: 6px 16px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.3s;
+}
+
+.btn-toggle-reply:hover { background: rgba(33,150,243,0.2); }
+
+.admin-reply-existing {
+  background: rgba(33,150,243,0.08);
+  border-left: 4px solid #2196F3;
+  border-radius: 0 12px 12px 0;
+  padding: 12px 16px;
+  margin-top: 12px;
+}
+
+.filter-bar {
+  background: rgba(255,255,255,0.85);
+  border: 2px solid rgba(76,175,80,0.2);
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.filter-btn {
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border: 2px solid rgba(76,175,80,0.3);
+  background: transparent;
+  color: #2E7D32;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.filter-btn:hover, .filter-btn.active {
+  background: linear-gradient(135deg, #2E7D32 0%, #4CAF50 100%);
+  color: white;
+  border-color: transparent;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  background: rgba(255,255,255,0.7);
+  border-radius: 20px;
+  border: 2px dashed rgba(76,175,80,0.3);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <div class="page-title">🛠️ Manage Complaints</div>
+    <p class="text-muted mb-0">Review and respond to user complaints</p>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-pill">
+      <div class="num">{{ stats.total }}</div>
+      <div class="lbl">Total</div>
+    </div>
+    <div class="stat-pill">
+      <div class="num" style="color:#E65100;">{{ stats.pending }}</div>
+      <div class="lbl">Pending</div>
+    </div>
+    <div class="stat-pill">
+      <div class="num" style="color:#0D47A1;">{{ stats.reviewing }}</div>
+      <div class="lbl">Reviewing</div>
+    </div>
+    <div class="stat-pill">
+      <div class="num" style="color:#2E7D32;">{{ stats.resolved }}</div>
+      <div class="lbl">Resolved</div>
+    </div>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar">
+    <span style="font-weight:700; color:#1B5E20;">Filter:</span>
+    <a href="{{ url_for('admin_complaints') }}" class="filter-btn {{ 'active' if not current_filter }}">All</a>
+    <a href="{{ url_for('admin_complaints', status='Pending') }}" class="filter-btn {{ 'active' if current_filter == 'Pending' }}">⏳ Pending</a>
+    <a href="{{ url_for('admin_complaints', status='Reviewing') }}" class="filter-btn {{ 'active' if current_filter == 'Reviewing' }}">🔍 Reviewing</a>
+    <a href="{{ url_for('admin_complaints', status='Resolved') }}" class="filter-btn {{ 'active' if current_filter == 'Resolved' }}">✅ Resolved</a>
+    <a href="{{ url_for('admin_complaints', status='Closed') }}" class="filter-btn {{ 'active' if current_filter == 'Closed' }}">🔒 Closed</a>
+  </div>
+
+  <!-- Complaints List -->
+  {% if complaints %}
+    {% for c in complaints %}
+    <div class="complaint-card {{ 'unread' if not c.admin_read }}">
+      <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <span class="user-tag"><i class="bi bi-person-fill me-1"></i>{{ c.username }}</span>
+          <span class="category-tag">{{ c.category }}</span>
+          {% if not c.admin_read %}
+            <span style="background:#FF9800; color:white; padding:2px 10px; border-radius:10px; font-size:0.75rem; font-weight:700;">NEW</span>
+          {% endif %}
+        </div>
+        <span class="status-badge status-{{ c.status | lower | replace(' ', '') }}">
+          {% if c.status == 'Pending' %}⏳
+          {% elif c.status == 'Reviewing' %}🔍
+          {% elif c.status == 'Resolved' %}✅
+          {% else %}🔒{% endif %}
+          {{ c.status }}
+        </span>
+      </div>
+
+      <strong style="font-size:1.05rem; color:#1B5E20; display:block; margin-bottom:6px;">{{ c.subject }}</strong>
+      <p class="text-muted mb-2" style="font-size:0.95rem;">{{ c.description }}</p>
+      <small class="text-muted"><i class="bi bi-clock me-1"></i>{{ c.timestamp.strftime('%d %b %Y, %I:%M %p') if c.timestamp else 'N/A' }}</small>
+
+      {% if c.admin_reply %}
+      <div class="admin-reply-existing">
+        <strong style="color:#0D47A1;"><i class="bi bi-shield-check me-1"></i>Your Reply:</strong>
+        <p class="mb-0 mt-1">{{ c.admin_reply }}</p>
+      </div>
+      {% endif %}
+
+      <!-- Action buttons -->
+      <div class="d-flex gap-2 mt-3 flex-wrap">
+        <button class="btn-toggle-reply" onclick="toggleReply('{{ c._id|string }}')">
+          <i class="bi bi-reply-fill me-1"></i>{{ 'Update Reply' if c.admin_reply else 'Reply' }}
+        </button>
+      </div>
+
+      <!-- Reply Form -->
+      <div class="reply-form" id="reply-{{ c._id|string }}">
+        <form method="POST" action="{{ url_for('admin_reply_complaint', complaint_id=c._id|string) }}">
+          <div class="mb-3">
+            <label class="form-label fw-bold" style="color:#1B5E20;">Update Status</label>
+            <select name="status" class="form-select">
+              <option value="Pending"   {{ 'selected' if c.status == 'Pending' }}>⏳ Pending</option>
+              <option value="Reviewing" {{ 'selected' if c.status == 'Reviewing' }}>🔍 Reviewing</option>
+              <option value="Resolved"  {{ 'selected' if c.status == 'Resolved' }}>✅ Resolved</option>
+              <option value="Closed"    {{ 'selected' if c.status == 'Closed' }}>🔒 Closed</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold" style="color:#1B5E20;">Reply to User</label>
+            <textarea name="reply" class="form-control" rows="3" placeholder="Write your response..." required>{{ c.admin_reply or '' }}</textarea>
+          </div>
+          <button type="submit" class="btn-reply">
+            <i class="bi bi-send-fill me-1"></i>Send Reply & Update Status
+          </button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty-state">
+      <div style="font-size:4rem; margin-bottom:16px;">📭</div>
+      <h4 style="color:#1B5E20; font-weight:800;">No complaints found</h4>
+      <p class="text-muted">{{ 'No complaints with status "' + current_filter + '"' if current_filter else 'No complaints have been submitted yet.' }}</p>
+    </div>
+  {% endif %}
+</div>
+
+<script>
+function toggleReply(id) {
+  const form = document.getElementById('reply-' + id);
+  form.classList.toggle('show');
+}
+</script>
+{% endblock %}

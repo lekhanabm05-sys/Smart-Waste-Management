@@ -1,0 +1,118 @@
+/* ================= GLOBAL ================= */
+body {
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* ================= LOGIN PAGE ================= */
+.login-bg {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+}
+
+.login-card {
+    width: 380px;
+    border-radius: 14px;
+}
+
+/* ================= WASTE STATISTICS ACTION CARD ================= */
+/* Used for "View Waste Statistics" on Dashboard */
+
+.stats-card {
+    display: inline-flex;
+    align-items: center;
+    gap: 15px;
+
+    padding: 14px 22px;
+    margin-bottom: 15px;
+
+    background: linear-gradient(135deg, #198754, #20c997);
+    color: #ffffff;
+
+    text-decoration: none;
+    border-radius: 12px;
+
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+}
+
+/* Hover Effect */
+.stats-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+    color: #ffffff;
+}
+
+/* Icon Container */
+.stats-icon {
+    width: 48px;
+    height: 48px;
+
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stats-icon i {
+    font-size: 1.5rem;
+}
+
+/* Text Section */
+.stats-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.stats-text .title {
+    font-size: 16PX;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.stats-text .subtitle {
+    font-size: 0.8rem;
+    opacity: 0.9;
+}
+
+/* Click Effect */
+.stats-card:active {
+    transform: translateY(0);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* ================= REPORTS PAGE ================= */
+.report-card {
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(18, 38, 63, 0.06);
+}
+
+.report-actions .btn {
+    min-width: 170px;
+}
+
+.json-preview pre {
+    background: #0f1724;
+    color: #e6eef8;
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    overflow: auto;
+}
+
+.report-table-card {
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(18, 38, 63, 0.06);
+}
+
+/* Small responsive tweaks */
+@media (max-width: 576px) {
+  .report-actions { flex-direction: column; }
+  .report-actions .btn { width: 100%; }
+}
+
+/* Dashboard statistics styles */
+.stat-card { border-radius: 10px; }
+.stat-icon { width:44px; height:44px; font-size:1.1rem; }
+.stat-value { font-weight:700; }
+.placeholder { background: linear-gradient(90deg, #f8fafc, #f1f5f9); }

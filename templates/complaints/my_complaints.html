@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% block title %}My Complaints – Smart Waste{% endblock %}
+
+{% block head_extra %}
+<style>
+body {
+  background: linear-gradient(135deg, #E8F5E8 0%, #C8E6C9 50%, #A5D6A7 100%) !important;
+  background-attachment: fixed !important;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #E8F5E8 0%, #C8E6C9 50%, #A5D6A7 100%);
+  z-index: -2;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 20% 80%, rgba(129,199,132,0.3) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(165,214,167,0.3) 0%, transparent 50%),
+              radial-gradient(circle at 40% 60%, rgba(200,230,201,0.3) 0%, transparent 50%);
+  z-index: -1;
+  animation: bgShift 20s ease-in-out infinite;
+}
+
+@keyframes bgShift {
+  0%,100% { transform: translateX(0) translateY(0); }
+  25%     { transform: translateX(-20px) translateY(-10px); }
+  50%     { transform: translateX(20px) translateY(10px); }
+  75%     { transform: translateX(-10px) translateY(5px); }
+}
+
+.page-header {
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(76,175,80,0.2);
+  border-radius: 20px;
+  padding: 30px 40px;
+  margin: 30px 0 20px;
+  animation: fadeInUp 0.6s ease;
+}
+
+@keyframes fadeInUp {
+  from { opacity:0; transform:translateY(30px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+.page-title { font-size: 2rem; font-weight: 900; color: #1B5E20; }
+
+.complaint-card {
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(76,175,80,0.15);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 16px;
+  transition: all 0.3s;
+  animation: fadeInUp 0.5s ease;
+}
+
+.complaint-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(76,175,80,0.2);
+}
+
+.status-badge {
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.status-pending   { background: #FFF3E0; color: #E65100; border: 2px solid #FF9800; }
+.status-reviewing { background: #E3F2FD; color: #0D47A1; border: 2px solid #2196F3; }
+.status-resolved  { background: #E8F5E9; color: #1B5E20; border: 2px solid #4CAF50; }
+.status-closed    { background: #F5F5F5; color: #616161; border: 2px solid #9E9E9E; }
+
+.category-tag {
+  background: rgba(76,175,80,0.1);
+  color: #2E7D32;
+  border: 1px solid rgba(76,175,80,0.3);
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.admin-reply {
+  background: rgba(33,150,243,0.08);
+  border-left: 4px solid #2196F3;
+  border-radius: 0 12px 12px 0;
+  padding: 14px 18px;
+  margin-top: 14px;
+}
+
+.new-btn {
+  background: linear-gradient(135deg, #2E7D32 0%, #4CAF50 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 28px;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s;
+}
+
+.new-btn:hover {
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(76,175,80,0.4);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  background: rgba(255,255,255,0.7);
+  border-radius: 20px;
+  border: 2px dashed rgba(76,175,80,0.3);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header d-flex justify-content-between align-items-center flex-wrap gap-3">
+    <div>
+      <div class="page-title">📋 My Complaints</div>
+      <p class="text-muted mb-0">Track the status of your submitted complaints</p>
+    </div>
+    <a href="{{ url_for('submit_complaint') }}" class="new-btn">
+      <i class="bi bi-plus-circle-fill"></i> New Complaint
+    </a>
+  </div>
+
+  {% if complaints %}
+    {% for c in complaints %}
+    <div class="complaint-card">
+      <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
+        <div>
+          <span class="category-tag me-2">{{ c.category }}</span>
+          <strong style="font-size:1.05rem; color:#1B5E20;">{{ c.subject }}</strong>
+        </div>
+        <span class="status-badge status-{{ c.status | lower | replace(' ', '') }}">
+          {% if c.status == 'Pending' %}⏳
+          {% elif c.status == 'Reviewing' %}🔍
+          {% elif c.status == 'Resolved' %}✅
+          {% else %}🔒{% endif %}
+          {{ c.status }}
+        </span>
+      </div>
+
+      <p class="text-muted mb-2" style="font-size:0.95rem;">{{ c.description }}</p>
+
+      <small class="text-muted">
+        <i class="bi bi-clock me-1"></i>
+        Submitted: {{ c.timestamp.strftime('%d %b %Y, %I:%M %p') if c.timestamp else 'N/A' }}
+      </small>
+
+      {% if c.admin_reply %}
+      <div class="admin-reply">
+        <strong style="color:#0D47A1;"><i class="bi bi-shield-check me-1"></i>Admin Response:</strong>
+        <p class="mb-0 mt-1">{{ c.admin_reply }}</p>
+        {% if c.replied_at %}
+        <small class="text-muted">{{ c.replied_at.strftime('%d %b %Y, %I:%M %p') }}</small>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty-state">
+      <div style="font-size:4rem; margin-bottom:16px;">📭</div>
+      <h4 style="color:#1B5E20; font-weight:800;">No complaints yet</h4>
+      <p class="text-muted mb-4">You haven't submitted any complaints. If you have an issue, let us know!</p>
+      <a href="{{ url_for('submit_complaint') }}" class="new-btn">
+        <i class="bi bi-plus-circle-fill"></i> Submit a Complaint
+      </a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

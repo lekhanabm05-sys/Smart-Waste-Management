@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+{% block title %}Submit Complaint – Smart Waste{% endblock %}
+
+{% block head_extra %}
+<style>
+body {
+  background: linear-gradient(135deg, #E8F5E8 0%, #C8E6C9 50%, #A5D6A7 100%) !important;
+  background-attachment: fixed !important;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #E8F5E8 0%, #C8E6C9 50%, #A5D6A7 100%);
+  z-index: -2;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 20% 80%, rgba(129,199,132,0.3) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(165,214,167,0.3) 0%, transparent 50%),
+              radial-gradient(circle at 40% 60%, rgba(200,230,201,0.3) 0%, transparent 50%);
+  z-index: -1;
+  animation: bgShift 20s ease-in-out infinite;
+}
+
+@keyframes bgShift {
+  0%,100% { transform: translateX(0) translateY(0); }
+  25%     { transform: translateX(-20px) translateY(-10px); }
+  50%     { transform: translateX(20px) translateY(10px); }
+  75%     { transform: translateX(-10px) translateY(5px); }
+}
+
+.complaint-card {
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(76,175,80,0.2);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(76,175,80,0.15);
+  padding: 40px;
+  max-width: 700px;
+  margin: 40px auto;
+  animation: fadeInUp 0.6s ease;
+}
+
+@keyframes fadeInUp {
+  from { opacity:0; transform:translateY(30px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 900;
+  color: #1B5E20;
+  margin-bottom: 8px;
+}
+
+.form-label { font-weight: 700; color: #1B5E20; }
+
+.form-control, .form-select {
+  border: 2px solid rgba(76,175,80,0.3);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 1rem;
+  transition: all 0.3s;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 4px rgba(76,175,80,0.15);
+  outline: none;
+}
+
+.submit-btn {
+  background: linear-gradient(135deg, #2E7D32 0%, #4CAF50 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 40px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  width: 100%;
+}
+
+.submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(76,175,80,0.4);
+}
+
+.category-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-right: 6px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.my-complaints-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #2E7D32;
+  font-weight: 700;
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 12px;
+  border: 2px solid rgba(76,175,80,0.3);
+  transition: all 0.3s;
+  margin-bottom: 20px;
+}
+
+.my-complaints-link:hover {
+  background: rgba(76,175,80,0.1);
+  color: #1B5E20;
+}
+
+.alert-success-custom {
+  background: rgba(76,175,80,0.15);
+  border: 2px solid #4CAF50;
+  border-radius: 12px;
+  color: #1B5E20;
+  padding: 16px 20px;
+  font-weight: 600;
+}
+
+.alert-danger-custom {
+  background: rgba(244,67,54,0.1);
+  border: 2px solid #f44336;
+  border-radius: 12px;
+  color: #c62828;
+  padding: 16px 20px;
+  font-weight: 600;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="complaint-card">
+    <a href="{{ url_for('my_complaints') }}" class="my-complaints-link">
+      <i class="bi bi-list-ul"></i> View My Complaints
+    </a>
+
+    <div class="page-title">📝 Submit a Complaint</div>
+    <p class="text-muted mb-4">Report an issue and our team will respond promptly.</p>
+
+    {% if success %}
+    <div class="alert-success-custom mb-4">
+      <i class="bi bi-check-circle-fill me-2"></i>{{ success }}
+    </div>
+    {% endif %}
+    {% if error %}
+    <div class="alert-danger-custom mb-4">
+      <i class="bi bi-exclamation-circle-fill me-2"></i>{{ error }}
+    </div>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('submit_complaint') }}">
+      <div class="mb-4">
+        <label class="form-label">Category</label>
+        <select name="category" class="form-select" required>
+          <option value="">-- Select a category --</option>
+          <option value="Missed Pickup">🚛 Missed Pickup</option>
+          <option value="Bin Overflow">🗑️ Bin Overflow</option>
+          <option value="Wrong Classification">🤖 Wrong Classification</option>
+          <option value="App Issue">📱 App Issue</option>
+          <option value="Other">💬 Other</option>
+        </select>
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label">Subject</label>
+        <input type="text" name="subject" class="form-control" placeholder="Brief description of the issue" required maxlength="100">
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label">Description</label>
+        <textarea name="description" class="form-control" rows="5" placeholder="Describe your complaint in detail..." required maxlength="1000"></textarea>
+        <small class="text-muted">Max 1000 characters</small>
+      </div>
+
+      <button type="submit" class="submit-btn">
+        <i class="bi bi-send-fill me-2"></i>Submit Complaint
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

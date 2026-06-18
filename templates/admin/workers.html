@@ -1,0 +1,537 @@
+{% extends "base.html" %}
+{% block title %}Worker Management – Admin{% endblock %}
+
+{% block head_extra %}
+<style>
+body {
+  background: linear-gradient(135deg, #E8F5E8 0%, #C8E6C9 50%, #A5D6A7 100%) !important;
+  background-attachment: fixed !important;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #E8F5E8 0%, #C8E6C9 50%, #A5D6A7 100%);
+  z-index: -2;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 20% 80%, rgba(129,199,132,0.3) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(165,214,167,0.3) 0%, transparent 50%),
+              radial-gradient(circle at 40% 60%, rgba(200,230,201,0.3) 0%, transparent 50%);
+  z-index: -1;
+  animation: bgShift 20s ease-in-out infinite;
+}
+
+@keyframes bgShift {
+  0%,100% { transform: translateX(0) translateY(0); }
+  25%     { transform: translateX(-20px) translateY(-10px); }
+  50%     { transform: translateX(20px) translateY(10px); }
+  75%     { transform: translateX(-10px) translateY(5px); }
+}
+
+@keyframes fadeInUp {
+  from { opacity:0; transform:translateY(30px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+.page-header {
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(76,175,80,0.2);
+  border-radius: 20px;
+  padding: 28px 36px;
+  margin: 24px 0 20px;
+  animation: fadeInUp 0.5s ease;
+}
+
+.page-title { font-size: 2rem; font-weight: 900; color: #1B5E20; }
+
+/* Stats */
+.stats-row { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 22px; }
+.stat-pill {
+  background: rgba(255,255,255,0.85);
+  border: 2px solid rgba(76,175,80,0.2);
+  border-radius: 14px;
+  padding: 14px 20px;
+  text-align: center;
+  flex: 1; min-width: 110px;
+  animation: fadeInUp 0.5s ease;
+}
+.stat-pill .num { font-size: 1.8rem; font-weight: 900; color: #1B5E20; }
+.stat-pill .lbl { font-size: 0.78rem; font-weight: 700; color: #555; }
+
+/* Tabs */
+.tab-bar {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  background: rgba(255,255,255,0.7);
+  border: 2px solid rgba(76,175,80,0.2);
+  border-radius: 14px;
+  padding: 8px;
+  margin-bottom: 20px;
+}
+.tab-btn {
+  padding: 9px 20px; border-radius: 10px; font-weight: 700; font-size: 0.9rem;
+  border: 2px solid transparent; background: transparent; color: #2E7D32;
+  cursor: pointer; transition: all 0.2s;
+}
+.tab-btn.active, .tab-btn:hover {
+  background: linear-gradient(135deg, #2E7D32 0%, #4CAF50 100%);
+  color: white; border-color: transparent;
+}
+
+/* Cards */
+.section-card {
+  background: rgba(255,255,255,0.88);
+  border: 2px solid rgba(76,175,80,0.15);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 20px;
+  animation: fadeInUp 0.5s ease;
+}
+
+.section-title {
+  font-size: 1.15rem; font-weight: 800; color: #1B5E20;
+  margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+}
+
+/* Table */
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table thead th {
+  background: linear-gradient(135deg, #2E7D32 0%, #4CAF50 100%);
+  color: white; padding: 12px 14px; font-size: 0.82rem;
+  font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px;
+}
+.data-table thead th:first-child { border-radius: 10px 0 0 0; }
+.data-table thead th:last-child  { border-radius: 0 10px 0 0; }
+.data-table tbody td {
+  padding: 11px 14px; border-bottom: 1px solid rgba(76,175,80,0.1);
+  font-size: 0.88rem; font-weight: 600; color: #222;
+}
+.data-table tbody tr:hover td { background: rgba(76,175,80,0.05); }
+
+/* Badges */
+.badge-status {
+  padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;
+}
+.badge-active   { background:#E8F5E9; color:#1B5E20; border:2px solid #4CAF50; }
+.badge-inactive { background:#F5F5F5; color:#616161; border:2px solid #9E9E9E; }
+.badge-onleave  { background:#FFF3E0; color:#E65100; border:2px solid #FF9800; }
+.badge-assigned { background:#E3F2FD; color:#0D47A1; border:2px solid #2196F3; }
+.badge-pending  { background:#FFF8E1; color:#F57F17; border:2px solid #FFC107; }
+.badge-done     { background:#E8F5E9; color:#1B5E20; border:2px solid #4CAF50; }
+
+/* Form */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media(max-width:600px){ .form-grid { grid-template-columns: 1fr; } }
+
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-label { font-weight: 700; color: #1B5E20; font-size: 0.88rem; }
+.form-control, .form-select {
+  border: 2px solid rgba(76,175,80,0.3); border-radius: 10px;
+  padding: 10px 14px; font-size: 0.9rem; transition: all 0.3s;
+}
+.form-control:focus, .form-select:focus {
+  border-color: #4CAF50; box-shadow: 0 0 0 3px rgba(76,175,80,0.15); outline: none;
+}
+
+/* Buttons */
+.btn-primary-green {
+  background: linear-gradient(135deg, #2E7D32 0%, #4CAF50 100%);
+  color: white; border: none; border-radius: 10px;
+  padding: 10px 24px; font-weight: 700; cursor: pointer; transition: all 0.3s;
+}
+.btn-primary-green:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(76,175,80,0.4); }
+
+.btn-sm-action {
+  padding: 5px 12px; border-radius: 8px; font-size: 0.78rem; font-weight: 700;
+  border: none; cursor: pointer; transition: all 0.2s;
+}
+.btn-edit   { background:#E3F2FD; color:#0D47A1; }
+.btn-delete { background:#FFEBEE; color:#C62828; }
+.btn-assign { background:#E8F5E9; color:#1B5E20; }
+.btn-sm-action:hover { transform: translateY(-1px); filter: brightness(0.95); }
+
+/* Performance bar */
+.perf-bar { background:#E8F5E9; border-radius:20px; height:8px; overflow:hidden; }
+.perf-fill { height:100%; border-radius:20px; background:linear-gradient(90deg,#4CAF50,#81C784); }
+
+/* Modal */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5); z-index: 9999;
+  align-items: center; justify-content: center;
+}
+.modal-overlay.show { display: flex; }
+.modal-box {
+  background: white; border-radius: 20px; padding: 32px;
+  width: 90%; max-width: 520px; max-height: 90vh; overflow-y: auto;
+  animation: fadeInUp 0.3s ease;
+}
+.modal-title { font-size: 1.3rem; font-weight: 800; color: #1B5E20; margin-bottom: 20px; }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+.empty-row td { text-align: center; padding: 30px; color: #888; font-style: italic; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <!-- Header -->
+  <div class="page-header d-flex justify-content-between align-items-center flex-wrap gap-3">
+    <div>
+      <div class="page-title">👷 Worker Management</div>
+      <p class="text-muted mb-0">Register workers, assign tasks, and monitor performance</p>
+    </div>
+    <button class="btn-primary-green" onclick="openModal('addWorkerModal')">
+      <i class="bi bi-person-plus-fill me-2"></i>Add Worker
+    </button>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-pill">
+      <div class="num">{{ stats.total }}</div>
+      <div class="lbl">Total Workers</div>
+    </div>
+    <div class="stat-pill">
+      <div class="num" style="color:#1B5E20;">{{ stats.active }}</div>
+      <div class="lbl">Active</div>
+    </div>
+    <div class="stat-pill">
+      <div class="num" style="color:#E65100;">{{ stats.on_leave }}</div>
+      <div class="lbl">On Leave</div>
+    </div>
+    <div class="stat-pill">
+      <div class="num" style="color:#0D47A1;">{{ stats.assigned_today }}</div>
+      <div class="lbl">Assigned Today</div>
+    </div>
+    <div class="stat-pill">
+      <div class="num" style="color:#2E7D32;">{{ stats.completed_today }}</div>
+      <div class="lbl">Completed Today</div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('workers')">👷 Workers</button>
+    <button class="tab-btn" onclick="switchTab('assignments')">📋 Assignments</button>
+    <button class="tab-btn" onclick="switchTab('performance')">📊 Performance</button>
+  </div>
+
+  <!-- TAB: Workers -->
+  <div id="tab-workers" class="tab-content active">
+    <div class="section-card">
+      <div class="section-title"><i class="bi bi-people-fill"></i> All Workers</div>
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Name</th><th>Phone</th><th>Zone</th><th>Shift</th>
+              <th>Status</th><th>Joined</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for w in workers %}
+            <tr>
+              <td><strong>{{ w.name }}</strong><br><small class="text-muted">{{ w.worker_id }}</small></td>
+              <td>{{ w.phone }}</td>
+              <td>{{ w.zone }}</td>
+              <td>{{ w.shift }}</td>
+              <td>
+                <span class="badge-status badge-{{ w.status | lower | replace(' ', '') }}">
+                  {{ w.status }}
+                </span>
+              </td>
+              <td>{{ w.joined_date.strftime('%d %b %Y') if w.joined_date else 'N/A' }}</td>
+              <td>
+                <div class="d-flex gap-1 flex-wrap">
+                  <button class="btn-sm-action btn-edit" onclick="editWorker('{{ w._id|string }}', '{{ w.name }}', '{{ w.phone }}', '{{ w.zone }}', '{{ w.shift }}', '{{ w.status }}')">
+                    <i class="bi bi-pencil"></i> Edit
+                  </button>
+                  <button class="btn-sm-action btn-assign" onclick="openAssignModal('{{ w._id|string }}', '{{ w.name }}')">
+                    <i class="bi bi-clipboard-plus"></i> Assign
+                  </button>
+                  <button class="btn-sm-action btn-delete" onclick="deleteWorker('{{ w._id|string }}', '{{ w.name }}')">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            {% else %}
+            <tr class="empty-row"><td colspan="7">No workers registered yet. Click "Add Worker" to get started.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: Assignments -->
+  <div id="tab-assignments" class="tab-content">
+    <div class="section-card">
+      <div class="section-title"><i class="bi bi-clipboard-check"></i> Task Assignments</div>
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Worker</th><th>Bin ID</th><th>Zone</th><th>Assigned</th>
+              <th>Due Date</th><th>Status</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for a in assignments %}
+            <tr>
+              <td><strong>{{ a.worker_name }}</strong></td>
+              <td>{{ a.bin_id }}</td>
+              <td>{{ a.zone }}</td>
+              <td>{{ a.assigned_at.strftime('%d %b %Y, %I:%M %p') if a.assigned_at else 'N/A' }}</td>
+              <td>{{ a.due_date.strftime('%d %b %Y') if a.due_date else '—' }}</td>
+              <td>
+                <span class="badge-status badge-{{ a.status | lower }}">{{ a.status }}</span>
+              </td>
+              <td>
+                {% if a.status == 'Assigned' %}
+                <form method="POST" action="{{ url_for('update_assignment_status', assignment_id=a._id|string) }}" style="display:inline;">
+                  <input type="hidden" name="status" value="In Progress">
+                  <button type="submit" class="btn-sm-action btn-assign">▶ Start</button>
+                </form>
+                {% endif %}
+                {% if a.status in ['Assigned', 'In Progress'] %}
+                <form method="POST" action="{{ url_for('update_assignment_status', assignment_id=a._id|string) }}" style="display:inline;">
+                  <input type="hidden" name="status" value="Done">
+                  <button type="submit" class="btn-sm-action btn-edit">✅ Done</button>
+                </form>
+                {% endif %}
+              </td>
+            </tr>
+            {% else %}
+            <tr class="empty-row"><td colspan="7">No assignments yet. Assign tasks to workers from the Workers tab.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: Performance -->
+  <div id="tab-performance" class="tab-content">
+    <div class="section-card">
+      <div class="section-title"><i class="bi bi-bar-chart-fill"></i> Worker Performance</div>
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Worker</th><th>Zone</th><th>Total Tasks</th>
+              <th>Completed</th><th>Pending</th><th>Completion Rate</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in performance %}
+            <tr>
+              <td><strong>{{ p.name }}</strong><br><small class="text-muted">{{ p.worker_id }}</small></td>
+              <td>{{ p.zone }}</td>
+              <td>{{ p.total }}</td>
+              <td style="color:#1B5E20; font-weight:800;">{{ p.completed }}</td>
+              <td style="color:#E65100; font-weight:800;">{{ p.pending }}</td>
+              <td style="min-width:140px;">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="perf-bar" style="flex:1;">
+                    <div class="perf-fill" style="width:{{ p.rate }}%;"></div>
+                  </div>
+                  <span style="font-weight:800; color:#1B5E20; min-width:40px;">{{ p.rate }}%</span>
+                </div>
+              </td>
+            </tr>
+            {% else %}
+            <tr class="empty-row"><td colspan="6">No performance data yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ADD WORKER MODAL -->
+<div class="modal-overlay" id="addWorkerModal">
+  <div class="modal-box">
+    <div class="modal-title">👷 Add New Worker</div>
+    <form method="POST" action="{{ url_for('add_worker') }}">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Full Name *</label>
+          <input type="text" name="name" class="form-control" required placeholder="e.g. Ravi Kumar">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone *</label>
+          <input type="text" name="phone" class="form-control" required placeholder="e.g. 9876543210">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Zone / Area *</label>
+          <input type="text" name="zone" class="form-control" required placeholder="e.g. Downtown Plaza">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Shift</label>
+          <select name="shift" class="form-select">
+            <option value="Morning">🌅 Morning (6AM–2PM)</option>
+            <option value="Afternoon">☀️ Afternoon (2PM–10PM)</option>
+            <option value="Night">🌙 Night (10PM–6AM)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select name="status" class="form-select">
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+            <option value="On Leave">On Leave</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Notes</label>
+          <input type="text" name="notes" class="form-control" placeholder="Optional notes">
+        </div>
+      </div>
+      <div class="d-flex gap-2 mt-4">
+        <button type="submit" class="btn-primary-green"><i class="bi bi-check-lg me-1"></i>Add Worker</button>
+        <button type="button" class="btn-sm-action btn-delete" style="padding:10px 20px;" onclick="closeModal('addWorkerModal')">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- EDIT WORKER MODAL -->
+<div class="modal-overlay" id="editWorkerModal">
+  <div class="modal-box">
+    <div class="modal-title">✏️ Edit Worker</div>
+    <form method="POST" id="editWorkerForm">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Full Name *</label>
+          <input type="text" name="name" id="edit_name" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone *</label>
+          <input type="text" name="phone" id="edit_phone" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Zone / Area *</label>
+          <input type="text" name="zone" id="edit_zone" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Shift</label>
+          <select name="shift" id="edit_shift" class="form-select">
+            <option value="Morning">🌅 Morning</option>
+            <option value="Afternoon">☀️ Afternoon</option>
+            <option value="Night">🌙 Night</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select name="status" id="edit_status" class="form-select">
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+            <option value="On Leave">On Leave</option>
+          </select>
+        </div>
+      </div>
+      <div class="d-flex gap-2 mt-4">
+        <button type="submit" class="btn-primary-green"><i class="bi bi-check-lg me-1"></i>Save Changes</button>
+        <button type="button" class="btn-sm-action btn-delete" style="padding:10px 20px;" onclick="closeModal('editWorkerModal')">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ASSIGN TASK MODAL -->
+<div class="modal-overlay" id="assignModal">
+  <div class="modal-box">
+    <div class="modal-title">📋 Assign Task</div>
+    <p class="text-muted mb-3">Assigning to: <strong id="assignWorkerName"></strong></p>
+    <form method="POST" id="assignForm">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Bin ID *</label>
+          <select name="bin_id" class="form-select" required>
+            <option value="">-- Select Bin --</option>
+            {% for bin in bins %}
+            <option value="{{ bin.bin_id }}">{{ bin.bin_id }} – {{ bin.area_name or bin.location or '' }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Due Date</label>
+          <input type="date" name="due_date" class="form-control">
+        </div>
+        <div class="form-group" style="grid-column:1/-1;">
+          <label class="form-label">Notes</label>
+          <input type="text" name="notes" class="form-control" placeholder="Optional task notes">
+        </div>
+      </div>
+      <div class="d-flex gap-2 mt-4">
+        <button type="submit" class="btn-primary-green"><i class="bi bi-clipboard-plus me-1"></i>Assign Task</button>
+        <button type="button" class="btn-sm-action btn-delete" style="padding:10px 20px;" onclick="closeModal('assignModal')">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+// Tab switching
+function switchTab(name) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// Modal helpers
+function openModal(id)  { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+// Close on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('show');
+  });
+});
+
+// Edit worker
+function editWorker(id, name, phone, zone, shift, status) {
+  document.getElementById('edit_name').value   = name;
+  document.getElementById('edit_phone').value  = phone;
+  document.getElementById('edit_zone').value   = zone;
+  document.getElementById('edit_shift').value  = shift;
+  document.getElementById('edit_status').value = status;
+  document.getElementById('editWorkerForm').action = '/admin/workers/' + id + '/edit';
+  openModal('editWorkerModal');
+}
+
+// Assign task
+function openAssignModal(workerId, workerName) {
+  document.getElementById('assignWorkerName').textContent = workerName;
+  document.getElementById('assignForm').action = '/admin/workers/' + workerId + '/assign';
+  openModal('assignModal');
+}
+
+// Delete worker
+function deleteWorker(id, name) {
+  if (confirm('Delete worker "' + name + '"? This cannot be undone.')) {
+    fetch('/admin/workers/' + id + '/delete', { method: 'POST' })
+      .then(r => r.json())
+      .then(d => { if (d.success) location.reload(); else alert(d.error); });
+  }
+}
+</script>
+{% endblock %}

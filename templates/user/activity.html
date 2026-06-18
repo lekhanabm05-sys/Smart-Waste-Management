@@ -1,0 +1,572 @@
+{% extends "base.html" %}
+
+{% block title %}My Activity Logs - Smart Waste Management{% endblock %}
+
+{% block head_extra %}
+<style>
+    :root {
+      --primary-gradient: linear-gradient(135deg, #66BB6A 0%, #81C784 100%);
+      --secondary-gradient: linear-gradient(135deg, #81C784 0%, #A5D6A7 100%);
+      --success-gradient: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+      --warning-gradient: linear-gradient(135deg, #FF9800 0%, #FFB74D 100%);
+      --danger-gradient: linear-gradient(135deg, #F44336 0%, #EF5350 100%);
+      --glass-bg: rgba(255, 255, 255, 0.15);
+      --glass-border: rgba(255, 255, 255, 0.18);
+      --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #E8F5E8 0%, #C8E6C9 50%, #A5D6A7 100%);
+      background-attachment: fixed;
+      background-size: cover;
+      min-height: 100vh;
+      position: relative;
+      color: #000000;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #E8F5E8 0%, #C8E6C9 50%, #A5D6A7 100%);
+      z-index: -2;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 80%, rgba(129, 199, 132, 0.3) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, rgba(165, 214, 167, 0.3) 0%, transparent 50%),
+                  radial-gradient(circle at 40% 60%, rgba(200, 230, 201, 0.3) 0%, transparent 50%);
+      z-index: -1;
+      animation: backgroundShift 15s ease-in-out infinite;
+    }
+
+    @keyframes backgroundShift {
+      0%, 100% {
+        transform: translateX(0) translateY(0);
+      }
+      25% {
+        transform: translateX(-20px) translateY(-10px);
+      }
+      50% {
+        transform: translateX(20px) translateY(10px);
+      }
+      75% {
+        transform: translateX(-10px) translateY(5px);
+      }
+    }
+
+    @keyframes fadeInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(50px) scale(0.8);
+        filter: blur(10px);
+      }
+      50% {
+        opacity: 0.5;
+        transform: translateY(25px) scale(0.9);
+        filter: blur(5px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0px);
+      }
+    }
+
+    @keyframes slideInLeft {
+      0% {
+        opacity: 0;
+        transform: translateX(-100px) rotateY(-10deg);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0) rotateY(0deg);
+      }
+    }
+
+    @keyframes slideInRight {
+      0% {
+        opacity: 0;
+        transform: translateX(100px) rotateY(10deg);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0) rotateY(0deg);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.05);
+        opacity: 0.8;
+      }
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: -200% 0;
+      }
+      100% {
+        background-position: 200% 0;
+      }
+    }
+
+    @keyframes rotate {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Activity Container */
+    .activity-container {
+      max-width: 1400px;
+      margin: 40px auto;
+      padding: 0 20px;
+      animation: fadeInUp 1.2s ease-out;
+    }
+
+    /* Header Section */
+    .activity-header {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 40px;
+      text-align: center;
+      color: #000000;
+      box-shadow: var(--card-shadow);
+      position: relative;
+      overflow: hidden;
+      animation: fadeInUp 1.2s ease-out;
+      margin-bottom: 30px;
+    }
+
+    .activity-header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      animation: rotate 30s linear infinite;
+    }
+
+    .activity-title {
+      font-size: 2.5rem;
+      font-weight: 900;
+      margin-bottom: 10px;
+      color: #000000;
+      text-shadow: 0 4px 8px rgba(255, 255, 255, 0.95);
+      position: relative;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.4);
+      padding: 15px 25px;
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.6);
+      letter-spacing: -0.5px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    }
+
+    .activity-subtitle {
+      font-size: 1.2rem;
+      font-weight: 600;
+      opacity: 1;
+      color: #000000;
+      text-shadow: 0 3px 6px rgba(255, 255, 255, 0.9);
+      position: relative;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.3);
+      padding: 12px 20px;
+      border-radius: 15px;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      letter-spacing: 0.2px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    /* Table Container */
+    .table-container {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      position: relative;
+      overflow: hidden;
+      animation: slideInLeft 0.8s ease-out 0.2s both;
+      box-shadow: var(--card-shadow);
+    }
+
+    .table-container::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      animation: rotate 30s linear infinite;
+    }
+
+    /* Custom Table */
+    .activity-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: transparent;
+      position: relative;
+      z-index: 10;
+    }
+
+    .activity-table thead th {
+      background: var(--primary-gradient);
+      color: #000000;
+      font-weight: 800;
+      padding: 15px;
+      text-align: left;
+      border: none;
+      text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      letter-spacing: 0.3px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .activity-table thead th:first-child {
+      border-top-left-radius: 15px;
+    }
+
+    .activity-table thead th:last-child {
+      border-top-right-radius: 15px;
+    }
+
+    .activity-table tbody td {
+      background: rgba(255, 255, 255, 0.1);
+      color: #000000;
+      padding: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      font-weight: 600;
+      text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 10;
+    }
+
+    .activity-table tbody tr:hover td {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateX(5px);
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+    }
+
+    /* Action Icons */
+    .action-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 1rem;
+      font-weight: 700;
+      text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+      position: relative;
+      z-index: 10;
+    }
+
+    .action-login {
+      background: var(--success-gradient);
+      color: #000000;
+    }
+
+    .action-logout {
+      background: var(--warning-gradient);
+      color: #000000;
+    }
+
+    .action-upload {
+      background: var(--primary-gradient);
+      color: #000000;
+    }
+
+    .action-pickup {
+      background: var(--secondary-gradient);
+      color: #000000;
+    }
+
+    .action-default {
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #000000;
+    }
+
+    /* Empty State */
+    .empty-state {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 60px 40px;
+      text-align: center;
+      margin: 40px auto;
+      max-width: 600px;
+      position: relative;
+      overflow: hidden;
+      animation: fadeInUp 1.2s ease-out;
+      box-shadow: var(--card-shadow);
+    }
+
+    .empty-state::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      animation: rotate 30s linear infinite;
+    }
+
+    .empty-icon {
+      font-size: 4rem;
+      color: #000000;
+      text-shadow: 0 3px 6px rgba(255, 255, 255, 0.8);
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .empty-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #000000;
+      text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
+      margin-bottom: 15px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .empty-text {
+      font-size: 1.1rem;
+      color: #000000;
+      text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+      margin-bottom: 25px;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-top: 30px;
+      animation: slideInRight 0.8s ease-out 0.4s both;
+    }
+
+    .action-btn {
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      color: #000000;
+      text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+      padding: 12px 25px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 10;
+    }
+
+    .action-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      animation: shimmer 3s linear infinite;
+      border-radius: 12px;
+    }
+
+    .action-btn:hover {
+      background: rgba(255, 255, 255, 0.4);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    .action-btn-primary {
+      background: var(--primary-gradient);
+      color: #000000;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .activity-container {
+        padding: 0 15px;
+      }
+
+      .activity-header {
+        padding: 30px 20px;
+      }
+
+      .activity-title {
+        font-size: 2rem;
+      }
+
+      .table-container {
+        padding: 20px;
+      }
+
+      .activity-table {
+        font-size: 0.9rem;
+      }
+
+      .activity-table thead th,
+      .activity-table tbody td {
+        padding: 10px;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .action-btn {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+    }
+
+    /* Dropdown Menu Styling - Perfect Design */
+    .dropdown-menu {
+      min-width: 320px !important; max-height: 90vh !important; overflow-y: auto !important;
+      z-index: 99999 !important; background: rgba(255, 255, 255, 0.98) !important;
+      border: 3px solid rgba(255, 255, 255, 0.5) !important; border-radius: 20px !important;
+      backdrop-filter: blur(25px) saturate(180%) !important;
+      box-shadow: 0 25px 70px rgba(0,0,0,0.2), 0 10px 30px rgba(0,0,0,0.15) !important; padding: 8px !important;
+    }
+    .dropdown-item {
+      padding: 14px 22px !important; font-weight: 600 !important; color: #1B5E20 !important;
+      border-radius: 12px !important; margin: 3px 4px !important; background: transparent !important;
+      border: 2px solid transparent !important; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    .dropdown-item:hover {
+      background: linear-gradient(135deg, #81C784 0%, #A5D6A7 100%) !important; color: #ffffff !important;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important; transform: translateX(6px) scale(1.02) !important;
+      box-shadow: 0 8px 20px rgba(76, 175, 80, 0.35) !important; border-color: rgba(255, 255, 255, 0.6) !important;
+    }
+    .dropdown-item.text-danger { color: #d32f2f !important; }
+    .dropdown-item.text-danger:hover {
+      background: linear-gradient(135deg, #EF5350 0%, #E57373 100%) !important; color: #ffffff !important;
+    }
+    .dropdown-header {
+      padding: 16px 22px !important; font-weight: 800 !important;
+      background: linear-gradient(135deg, #66BB6A 0%, #81C784 100%) !important; color: #ffffff !important;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important; border-radius: 14px !important;
+      margin: 0 4px 8px 4px !important; box-shadow: 0 4px 12px rgba(76, 175, 80, 0.25) !important;
+    }
+    .dropdown-divider { margin: 12px 16px !important; border-color: rgba(27, 94, 32, 0.15) !important; border-width: 2px !important; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="activity-container">
+  <!-- Header Section -->
+  <div class="activity-header">
+    <h1 class="activity-title">📊 My Activity Logs</h1>
+    <p class="activity-subtitle">Track all your actions and classifications with advanced analytics</p>
+  </div>
+
+  {% if logs %}
+  <!-- Table Container -->
+  <div class="table-container">
+    <table class="activity-table">
+      <thead>
+        <tr>
+          <th>📅 Date & Time</th>
+          <th>🎯 Action</th>
+          <th>📝 Details</th>
+          <th>🌐 IP Address</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for log in logs %}
+        <tr>
+          <td>
+            <small style="color: #000000; font-weight: 600;">
+              {{ log.get('timestamp').strftime('%d %b %Y, %I:%M %p') if log.get('timestamp') else 'N/A' }}
+            </small>
+          </td>
+          <td>
+            <div class="action-icon {{ 'action-' + log.get('action', '').lower() }}">
+              {% if log.get('action') == 'Login' %}
+                <i class="bi bi-box-arrow-in-right"></i>
+              {% elif log.get('action') == 'Logout' %}
+                <i class="bi bi-box-arrow-left"></i>
+              {% elif log.get('action') == 'Upload & Classification' %}
+                <i class="bi bi-cloud-upload"></i>
+              {% elif log.get('action') == 'Request Pickup' %}
+                <i class="bi bi-truck"></i>
+              {% else %}
+                <i class="bi bi-circle-fill"></i>
+              {% endif %}
+            </div>
+            <strong style="color: #000000; font-size: 1.1rem; margin-left: 10px;">{{ log.get('action', 'Unknown') }}</strong>
+          </td>
+          <td>
+            <small style="color: #000000; font-weight: 600;">{{ log.get('details', '-') }}</small>
+          </td>
+          <td>
+            <small style="color: #000000; font-weight: 600;">{{ log.get('ip_address', '-') }}</small>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <!-- Empty State -->
+  <div class="empty-state">
+    <div class="empty-icon">📭</div>
+    <h2 class="empty-title">No Activity Yet</h2>
+    <p class="empty-text">Start using the platform to track your waste management activities and see your detailed logs here.</p>
+  </div>
+  {% endif %}
+
+  <!-- Action Buttons -->
+  <div class="action-buttons">
+    <a href="{{ url_for('user_history') }}" class="action-btn">
+      📋 View Upload History
+    </a>
+    <a href="{{ url_for('home') }}" class="action-btn action-btn-primary">
+      🏠 Back to Dashboard
+    </a>
+  </div>
+</div>
+
+{% endblock %}

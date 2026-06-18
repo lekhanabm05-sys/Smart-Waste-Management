@@ -1,0 +1,836 @@
+{% extends "base.html" %}
+
+{% block title %}Notifications - Smart Waste Management{% endblock %}
+
+{% block head_extra %}
+<style>
+:root {
+  --primary-gradient: linear-gradient(135deg, #66BB6A 0%, #81C784 100%);
+  --secondary-gradient: linear-gradient(135deg, #81C784 0%, #A5D6A7 100%);
+  --success-gradient: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+  --warning-gradient: linear-gradient(135deg, #FFA726 0%, #FFB74D 100%);
+  --danger-gradient: linear-gradient(135deg, #EF5350 0%, #E57373 100%);
+  --info-gradient: linear-gradient(135deg, #66BB6A 0%, #81C784 100%);
+  --glass-bg: rgba(255, 255, 255, 0.25);
+  --glass-border: rgba(255, 255, 255, 0.35);
+  --card-shadow: 0 20px 40px rgba(76, 175, 80, 0.15);
+  --hover-shadow: 0 25px 50px rgba(76, 175, 80, 0.25);
+  --text-primary: #1B5E20;
+  --text-secondary: #2E7D32;
+  --text-shadow: 0 4px 8px rgba(255, 255, 255, 0.9);
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(135deg, #E8F5E8 0%, #C8E6C9 50%, #A5D6A7 100%);
+  background-attachment: fixed;
+  background-size: cover;
+  min-height: 100vh;
+  position: relative;
+  color: #000000;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #E8F5E8 0%, #C8E6C9 50%, #A5D6A7 100%);
+  z-index: -2;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 20% 80%, rgba(129, 199, 132, 0.3) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(165, 214, 167, 0.3) 0%, transparent 50%),
+              radial-gradient(circle at 40% 60%, rgba(200, 230, 201, 0.3) 0%, transparent 50%);
+  z-index: -1;
+  animation: backgroundShift 20s ease-in-out infinite;
+}
+
+@keyframes backgroundShift {
+  0%, 100% {
+    transform: translateX(0) translateY(0);
+  }
+  25% {
+    transform: translateX(-20px) translateY(-10px);
+  }
+  50% {
+    transform: translateX(20px) translateY(10px);
+  }
+  75% {
+    transform: translateX(-10px) translateY(5px);
+  }
+}
+
+/* Advanced Animations */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(50px) scale(0.8);
+    filter: blur(10px);
+  }
+  50% {
+    opacity: 0.5;
+    transform: translateY(25px) scale(0.9);
+    filter: blur(5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0px);
+  }
+}
+
+@keyframes slideInLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-100px) rotateY(-10deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) rotateY(0deg);
+  }
+}
+
+@keyframes slideInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(100px) rotateY(10deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) rotateY(0deg);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  33% {
+    transform: translateY(-20px) rotate(120deg);
+  }
+  66% {
+    transform: translateY(20px) rotate(240deg);
+  }
+}
+
+/* Floating Background Shapes */
+.bg-animation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.floating-shape {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  animation: float 20s infinite ease-in-out;
+}
+
+.shape1 {
+  width: 300px;
+  height: 300px;
+  top: -150px;
+  left: -150px;
+  animation-delay: 0s;
+}
+
+.shape2 {
+  width: 200px;
+  height: 200px;
+  top: 50%;
+  right: -100px;
+  animation-delay: 3s;
+}
+
+.shape3 {
+  width: 150px;
+  height: 150px;
+  bottom: -75px;
+  left: 30%;
+  animation-delay: 6s;
+}
+
+.shape4 {
+  width: 250px;
+  height: 250px;
+  top: 20%;
+  right: 20%;
+  animation-delay: 9s;
+}
+
+/* Professional Header */
+.notifications-hero {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 50px 40px;
+  text-align: center;
+  margin: 40px auto;
+  max-width: 1200px;
+  position: relative;
+  overflow: hidden;
+  animation: fadeInUp 1.2s ease-out;
+  box-shadow: var(--card-shadow);
+}
+
+.notifications-hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  animation: rotate 30s linear infinite;
+}
+
+.hero-title {
+  font-size: 2.5rem;
+  font-weight: 900;
+  margin-bottom: 15px;
+  color: #1B5E20;
+  text-shadow: 0 4px 8px rgba(255, 255, 255, 0.95);
+  position: relative;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.4);
+  padding: 20px 30px;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  letter-spacing: -0.5px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  display: inline-block;
+}
+
+.hero-subtitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  opacity: 1;
+  color: #2E865F;
+  text-shadow: 0 3px 6px rgba(255, 255, 255, 0.9);
+  position: relative;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.3);
+  padding: 12px 20px;
+  border-radius: 15px;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.2px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  display: inline-block;
+  margin-top: 10px;
+}
+
+/* Notifications Container */
+.notifications-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Professional Notification Cards */
+.notification-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 15px;
+  padding: 25px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+  animation: slideInLeft 0.8s ease-out;
+  box-shadow: var(--card-shadow);
+  transition: all 0.3s ease;
+}
+
+.notification-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  animation: rotate 30s linear infinite;
+}
+
+.notification-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(76, 175, 80, 0.2);
+  border-color: rgba(76, 175, 80, 0.3);
+}
+
+/* Notification Header */
+.notification-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  position: relative;
+  z-index: 10;
+}
+
+.notification-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-right: 15px;
+  text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
+  position: relative;
+  z-index: 10;
+}
+
+.notification-icon.success {
+  background: var(--success-gradient);
+  color: #000000;
+}
+
+.notification-icon.warning {
+  background: var(--warning-gradient);
+  color: #000000;
+}
+
+.notification-icon.danger {
+  background: var(--danger-gradient);
+  color: #000000;
+}
+
+.notification-icon.info {
+  background: var(--info-gradient);
+  color: #000000;
+}
+
+.notification-icon.default {
+  background: var(--primary-gradient);
+  color: #000000;
+}
+
+.notification-icon.bin-full {
+  background: var(--warning-gradient);
+  color: #000000;
+}
+
+.notification-icon.pickup-completed {
+  background: var(--success-gradient);
+  color: #000000;
+}
+
+.notification-icon.system-alert {
+  background: var(--info-gradient);
+  color: #000000;
+}
+
+/* Notification Content */
+.notification-content {
+  flex: 1;
+  position: relative;
+  z-index: 10;
+}
+
+.notification-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #000000;
+  text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
+  margin-bottom: 5px;
+  letter-spacing: 0.3px;
+}
+
+.notification-message {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #000000;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+.notification-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #000000;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+  position: relative;
+  z-index: 10;
+}
+
+.notification-time {
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 5px 10px;
+  border-radius: 8px;
+  backdrop-filter: blur(5px);
+}
+
+.notification-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.action-btn {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #000000;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+  padding: 8px 15px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 10;
+}
+
+.action-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: shimmer 3s linear infinite;
+  border-radius: 8px;
+}
+
+.action-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(76, 175, 80, 0.2);
+}
+
+/* Badges */
+.badge {
+  background: var(--primary-gradient);
+  color: #000000;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  position: relative;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+/* Statistics Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin: 30px 0;
+}
+
+.stat-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 15px;
+  padding: 25px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  animation: slideInRight 0.8s ease-out;
+  box-shadow: var(--card-shadow);
+  transition: all 0.3s ease;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  animation: rotate 30s linear infinite;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(76, 175, 80, 0.2);
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #000000;
+  text-shadow: 0 3px 6px rgba(255, 255, 255, 0.95);
+  margin-bottom: 10px;
+  position: relative;
+  z-index: 10;
+}
+
+.stat-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #000000;
+  text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
+  position: relative;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 8px 15px;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+/* Empty State */
+.empty-state {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 4rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  animation: fadeInUp 1.2s ease-out;
+  box-shadow: var(--card-shadow);
+  margin: 40px 0;
+}
+
+.empty-state::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  animation: rotate 30s linear infinite;
+}
+
+.empty-state h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: #000000;
+  text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
+  position: relative;
+  z-index: 10;
+}
+
+.empty-state p {
+  font-size: 1rem;
+  opacity: 1;
+  margin-bottom: 25px;
+  color: #000000;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+  position: relative;
+  z-index: 10;
+}
+
+.empty-state-icon {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 30px;
+  background: var(--primary-gradient);
+  backdrop-filter: blur(10px);
+  border: 3px solid rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000000;
+  font-size: 3rem;
+  position: relative;
+  z-index: 10;
+  animation: pulse 2s ease-in-out infinite;
+  box-shadow: 0 10px 30px rgba(76, 175, 80, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .notifications-hero {
+    padding: 2rem 1.5rem;
+  }
+  
+  .notifications-hero h1 {
+    font-size: 2rem;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .notification-card {
+    padding: 1.2rem;
+  }
+  
+  .notification-content {
+    margin-left: 12px;
+  }
+  
+  .notification-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+}
+
+/* Dropdown Menu Styling - Perfect Design */
+.dropdown-menu {
+  min-width: 320px !important; max-height: 90vh !important; overflow-y: auto !important;
+  z-index: 99999 !important; background: rgba(255, 255, 255, 0.98) !important;
+  border: 3px solid rgba(255, 255, 255, 0.5) !important; border-radius: 20px !important;
+  backdrop-filter: blur(25px) saturate(180%) !important;
+  box-shadow: 0 25px 70px rgba(0,0,0,0.2), 0 10px 30px rgba(0,0,0,0.15) !important; padding: 8px !important;
+}
+.dropdown-item {
+  padding: 14px 22px !important; font-weight: 600 !important; color: #1B5E20 !important;
+  border-radius: 12px !important; margin: 3px 4px !important; background: transparent !important;
+  border: 2px solid transparent !important; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.dropdown-item:hover {
+  background: linear-gradient(135deg, #81C784 0%, #A5D6A7 100%) !important; color: #ffffff !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important; transform: translateX(6px) scale(1.02) !important;
+  box-shadow: 0 8px 20px rgba(76, 175, 80, 0.35) !important; border-color: rgba(255, 255, 255, 0.6) !important;
+}
+.dropdown-item.text-danger { color: #d32f2f !important; }
+.dropdown-item.text-danger:hover {
+  background: linear-gradient(135deg, #EF5350 0%, #E57373 100%) !important; color: #ffffff !important;
+}
+.dropdown-header {
+  padding: 16px 22px !important; font-weight: 800 !important;
+  background: linear-gradient(135deg, #66BB6A 0%, #81C784 100%) !important; color: #ffffff !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important; border-radius: 14px !important;
+  margin: 0 4px 8px 4px !important; box-shadow: 0 4px 12px rgba(76, 175, 80, 0.25) !important;
+}
+.dropdown-divider { margin: 12px 16px !important; border-color: rgba(27, 94, 32, 0.15) !important; border-width: 2px !important; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Animated Background -->
+<div class="bg-animation">
+  <div class="floating-shape shape1"></div>
+  <div class="floating-shape shape2"></div>
+  <div class="floating-shape shape3"></div>
+  <div class="floating-shape shape4"></div>
+</div>
+
+<div class="container">
+  <!-- Hero Section -->
+  <div class="notifications-hero">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <h1 class="hero-title">🔔 Notifications Center</h1>
+        <p class="hero-subtitle">Stay informed with real-time updates and alerts from your Smart Waste Management system</p>
+        {% if notifications and session.get('role') != 'admin' %}
+          <button class="action-btn btn-lg mt-3" onclick="markAllAsRead()">
+            <i class="bi bi-check-all me-2"></i>Mark All as Read
+          </button>
+        {% endif %}
+      </div>
+      <div class="col-lg-4 text-center">
+        <div class="notification-icon default" style="width: 100px; height: 100px; font-size: 2.5rem; margin: 0 auto;">
+          <i class="bi bi-bell"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistics -->
+  {% if notifications %}
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-number">{{ notifications|length }}</div>
+      <div class="stat-label">Total Notifications</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ notifications|selectattr('read', 'equalto', false)|list|length }}</div>
+      <div class="stat-label">Unread</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ notifications|selectattr('read', 'equalto', true)|list|length }}</div>
+      <div class="stat-label">Read</div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Notifications List -->
+  {% if notifications %}
+    <div class="row">
+      {% for notif in notifications %}
+        <div class="col-lg-6 mb-4">
+          <div class="notification-card" id="notif-{{ notif._id|string }}">
+            <div class="d-flex align-items-start">
+              <div class="notification-icon {% if notif.type == 'bin_full' %}bin-full{% elif notif.type == 'pickup_completed' %}pickup-completed{% elif notif.type == 'system_alert' %}system-alert{% elif notif.type == 'pickup_rejected' %}pickup-rejected{% else %}default{% endif %}">
+                {% if notif.type == 'bin_full' %}
+                  <i class="bi bi-exclamation-triangle-fill"></i>
+                {% elif notif.type == 'pickup_completed' %}
+                  <i class="bi bi-truck"></i>
+                {% elif notif.type == 'system_alert' %}
+                  <i class="bi bi-info-circle-fill"></i>
+                {% elif notif.type == 'pickup_rejected' %}
+                  <i class="bi bi-x-circle-fill"></i>
+                {% else %}
+                  <i class="bi bi-bell-fill"></i>
+                {% endif %}
+              </div>
+              
+              <div class="notification-content">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <h5 class="notification-title">{{ notif.title }}</h5>
+                  {% if not notif.read %}
+                    <span class="badge">New</span>
+                  {% endif %}
+                </div>
+                
+                <p class="notification-message">{{ notif.message }}</p>
+                
+                <div class="notification-meta">
+                  <div class="notification-time">
+                    <i class="bi bi-clock me-1"></i>
+                    {{ notif.timestamp.strftime('%d %b %Y, %I:%M %p') if notif.timestamp else 'N/A' }}
+                  </div>
+                  
+                  {% if not notif.read %}
+                    <button class="action-btn" onclick="markAsRead('{{ notif._id|string }}')">
+                      {% if notif.type == 'bin_full' or notif.type == 'system_alert' %}
+                        <i class="bi bi-check-circle me-1"></i>Allow
+                      {% else %}
+                        <i class="bi bi-check-circle me-1"></i>Mark as Read
+                      {% endif %}
+                    </button>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-state-icon">
+        <i class="bi bi-inbox"></i>
+      </div>
+      <h3>No Notifications Yet</h3>
+      <p>You're all caught up! We'll notify you when there are important updates.</p>
+      <a href="{{ url_for('dashboard') }}" class="action-btn">
+        <i class="bi bi-speedometer2 me-2"></i>Go to Dashboard
+      </a>
+    </div>
+  {% endif %}
+</div>
+
+<script>
+  function markAsRead(notificationId) {
+    const card = document.getElementById(`notif-${notificationId}`);
+    card.style.opacity = '0.6';
+    card.style.transform = 'scale(0.98)';
+    
+    fetch(`/api/notifications/${notificationId}/read`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    })
+    .then(response => response.json())
+    .then(data => {
+      // Remove badge and button
+      const badge = card.querySelector('.badge');
+      const button = card.querySelector('button');
+      if (badge) badge.remove();
+      if (button) button.remove();
+      
+      // Update stats
+      updateStats();
+    })
+    .catch(error => console.error('Error:', error));
+  }
+
+  function markAllAsRead() {
+    fetch('/api/notifications/read-all', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    })
+    .then(response => response.json())
+    .then(data => {
+      location.reload();
+    })
+    .catch(error => console.error('Error:', error));
+  }
+
+  function updateStats() {
+    // Update statistics dynamically
+    const cards = document.querySelectorAll('.notification-card');
+    const unread = document.querySelectorAll('.badge').length;
+    
+    // You can add dynamic stat updates here
+  }
+
+  // Add smooth animations on load
+  document.addEventListener('DOMContentLoaded', function() {
+    const cards = document.querySelectorAll('.notification-card, .stat-card');
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.animation = 'fadeInUp 0.6s ease forwards';
+        }
+      });
+    }, observerOptions);
+
+    cards.forEach(card => {
+      observer.observe(card);
+    });
+  });
+</script>
+{% endblock %}

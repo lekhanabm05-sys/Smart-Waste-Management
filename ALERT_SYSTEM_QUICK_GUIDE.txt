@@ -1,0 +1,156 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    ALERT SYSTEM - QUICK REFERENCE GUIDE                      ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ 1. BIN FULL ALERT                                                            │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+   Fields:
+   ┌─────────────────────────────────────────┐
+   │ Bin ID *                                │  ← Select bin from dropdown
+   │ [-- Select Bin --                    ▼] │
+   └─────────────────────────────────────────┘
+
+   ┌─────────────────────────────────────────┐
+   │ Send To *                               │  ← NEW! Choose recipient
+   │ [All Users (Broadcast)               ▼] │
+   │                                         │
+   │ Options:                                │
+   │   • All Users (Broadcast)               │  ← Everyone gets notification
+   │   • john_doe (john@example.com)         │  ← Only john_doe gets it
+   │   • jane_smith (jane@example.com)       │  ← Only jane_smith gets it
+   │   • bob_wilson (bob@example.com)        │  ← Only bob_wilson gets it
+   └─────────────────────────────────────────┘
+
+   [🚨 SEND BIN FULL ALERT]
+
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ 2. SYSTEM ALERT                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+   Fields:
+   ┌─────────────────────────────────────────┐
+   │ Alert Title *                           │
+   │ [e.g., Maintenance Schedule          ] │
+   └─────────────────────────────────────────┘
+
+   ┌─────────────────────────────────────────┐
+   │ Alert Message *                         │
+   │ [Enter alert message...              ] │
+   │ [                                    ] │
+   │ [                                    ] │
+   └─────────────────────────────────────────┘
+
+   ┌─────────────────────────────────────────┐
+   │ Send To *                               │  ← NEW! Choose recipient
+   │ [All Users (Broadcast)               ▼] │
+   │                                         │
+   │ Options:                                │
+   │   • All Users (Broadcast)               │  ← Everyone gets notification
+   │   • john_doe (john@example.com)         │  ← Only john_doe gets it
+   │   • jane_smith (jane@example.com)       │  ← Only jane_smith gets it
+   │   • bob_wilson (bob@example.com)        │  ← Only bob_wilson gets it
+   └─────────────────────────────────────────┘
+
+   ┌─────────────────────────────────────────┐
+   │ Severity                                │
+   │ [Info                                ▼] │
+   │                                         │
+   │ Options:                                │
+   │   • Info     (Blue - General info)      │
+   │   • Warning  (Orange - Important)       │
+   │   • Danger   (Red - Urgent)             │
+   └─────────────────────────────────────────┘
+
+   [✅ SEND SYSTEM ALERT]
+
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ 3. CUSTOM NOTIFICATION (From Pickup Requests)                               │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+   In Pending/Approved Pickups table, click [📧 Notify] button
+
+   Modal Opens:
+   ┌─────────────────────────────────────────┐
+   │ Recipient *                             │
+   │ [john_doe                            ] │  ← Auto-filled (read-only)
+   └─────────────────────────────────────────┘
+
+   ┌─────────────────────────────────────────┐
+   │ Notification Title *                    │
+   │ [e.g., Pickup Update                 ] │
+   └─────────────────────────────────────────┘
+
+   ┌─────────────────────────────────────────┐
+   │ Message *                               │
+   │ [Enter your message...               ] │
+   │ [                                    ] │
+   │ [                                    ] │
+   └─────────────────────────────────────────┘
+
+   ┌─────────────────────────────────────────┐
+   │ Severity                                │
+   │ [Info                                ▼] │
+   └─────────────────────────────────────────┘
+
+   [✅ Send Notification]  [❌ Cancel]
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                              RECIPIENT OPTIONS                               ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ ALL USERS (BROADCAST)                                                        │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ ✓ Sends to everyone in the system                                           │
+│ ✓ Appears in all users' notification pages                                  │
+│ ✓ Use for: System announcements, maintenance, general alerts                │
+│                                                                              │
+│ Examples:                                                                    │
+│   • "System maintenance scheduled for Sunday 2-4 PM"                         │
+│   • "Holiday collection schedule changed"                                    │
+│   • "New waste classification feature available"                             │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ SPECIFIC USER                                                                │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ ✓ Sends only to selected user                                               │
+│ ✓ Private communication                                                      │
+│ ✓ Use for: Personal updates, follow-ups, specific instructions              │
+│                                                                              │
+│ Examples:                                                                    │
+│   • "Your pickup for Bin-001 delayed until tomorrow"                        │
+│   • "Please provide more details about your waste type"                     │
+│   • "Your pickup request has been approved"                                 │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                            SUCCESS MESSAGES                                  ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+When sending to ALL USERS:
+   ✅ "Alert sent to all users"
+   🔔 "Alert for bin BIN-001 has been sent to all users successfully!"
+
+When sending to SPECIFIC USER:
+   ✅ "Alert sent to john_doe"
+   🔔 "Alert for bin BIN-001 has been sent to john_doe successfully!"
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                              QUICK TIPS                                      ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+1. Default selection is "All Users (Broadcast)"
+2. User list shows username and email for easy identification
+3. Only non-admin users appear in the dropdown
+4. System validates that selected user exists before sending
+5. All notification activity is logged in Activity Logs
+6. Forms reset after successful send
+

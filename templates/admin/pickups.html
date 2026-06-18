@@ -1,0 +1,1974 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Pickups - Smart Waste Management{% endblock %}
+{% block head_extra %}
+<style>
+:root {
+  --primary-gradient: linear-gradient(135deg, #66BB6A 0%, #81C784 100%);
+  --secondary-gradient: linear-gradient(135deg, #81C784 0%, #A5D6A7 100%);
+  --success-gradient: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+  --warning-gradient: linear-gradient(135deg, #8BC34A 0%, #C6E2B5 100%);
+  --danger-gradient: linear-gradient(135deg, #8BC34A 0%, #C6E2B5 100%);
+  --info-gradient: linear-gradient(135deg, #66BB6A 0%, #81C784 100%);
+  --glass-bg: rgba(255, 255, 255, 0.15);
+  --glass-border: rgba(255, 255, 255, 0.25);
+  --card-shadow: 0 15px 35px rgba(0, 128, 0, 0.15);
+  --hover-shadow: 0 20px 40px rgba(0, 128, 0, 0.25);
+  --text-primary: #1B5E20;
+  --text-secondary: #2E7D32;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(135deg, #E8F5E8 0%, #C8E6C9 50%, #A5D6A7 100%);
+  background-attachment: fixed;
+  background-size: cover;
+  min-height: 100vh;
+  position: relative;
+  color: #000000;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #E8F5E8 0%, #C8E6C9 50%, #A5D6A7 100%);
+  z-index: -2;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 20% 80%, rgba(129, 199, 132, 0.3) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(165, 214, 167, 0.3) 0%, transparent 50%),
+              radial-gradient(circle at 40% 60%, rgba(200, 230, 201, 0.3) 0%, transparent 50%);
+  z-index: -1;
+  animation: backgroundShift 15s ease-in-out infinite;
+}
+
+
+@keyframes backgroundShift {
+  0%, 100% {
+    transform: translateX(0) translateY(0);
+  }
+  25% {
+    transform: translateX(-20px) translateY(-10px);
+  }
+  50% {
+    transform: translateX(20px) translateY(10px);
+  }
+  75% {
+    transform: translateX(-10px) translateY(5px);
+  }
+}
+
+/* Advanced Animations */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(50px) scale(0.8);
+    filter: blur(10px);
+  }
+  50% {
+    opacity: 0.5;
+    transform: translateY(25px) scale(0.9);
+    filter: blur(5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0px);
+  }
+}
+
+@keyframes slideInLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-100px) rotateY(-10deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) rotateY(0deg);
+  }
+}
+
+@keyframes slideInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(100px) rotateY(10deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) rotateY(0deg);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  33% {
+    transform: translateY(-20px) rotate(120deg);
+  }
+  66% {
+    transform: translateY(20px) rotate(240deg);
+  }
+}
+
+/* Floating Background Shapes */
+.bg-animation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.floating-shape {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  animation: float 20s infinite ease-in-out;
+}
+
+.shape1 {
+  width: 300px;
+  height: 300px;
+  top: -150px;
+  left: -150px;
+  animation-delay: 0s;
+}
+
+.shape2 {
+  width: 200px;
+  height: 200px;
+  top: 50%;
+  right: -100px;
+  animation-delay: 3s;
+}
+
+.shape3 {
+  width: 150px;
+  height: 150px;
+  bottom: -75px;
+  left: 30%;
+  animation-delay: 6s;
+}
+
+.shape4 {
+  width: 250px;
+  height: 250px;
+  top: 20%;
+  right: 20%;
+  animation-delay: 9s;
+}
+
+/* Professional Header */
+.pickups-hero {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.1) 100%);
+  backdrop-filter: blur(25px);
+  border: 2px solid rgba(76, 175, 80, 0.4);
+  border-radius: 25px;
+  padding: 40px 30px;
+  text-align: center;
+  margin: 30px auto;
+  max-width: 1000px;
+  position: relative;
+  overflow: hidden;
+  animation: fadeInUp 1.5s ease-out;
+  box-shadow: 0 25px 50px rgba(76, 175, 80, 0.2);
+}
+
+.pickups-hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+  animation: rotate 40s linear infinite;
+}
+
+.hero-title {
+  font-size: 2.8rem;
+  font-weight: 900;
+  margin-bottom: 15px;
+  color: #1B5E20;
+  text-shadow: 0 4px 8px rgba(255, 255, 255, 0.95);
+  position: relative;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 20px 30px;
+  border-radius: 20px;
+  backdrop-filter: blur(15px);
+  border: 2px solid rgba(76, 175, 80, 0.6);
+  letter-spacing: -0.5px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  box-shadow: 0 8px 25px rgba(76, 175, 80, 0.2);
+  display: inline-block;
+}
+
+.hero-subtitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+  opacity: 1;
+  color: #2E7D32;
+  text-shadow: 0 3px 6px rgba(255, 255, 255, 0.9);
+  position: relative;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.4);
+  padding: 15px 25px;
+  border-radius: 15px;
+  backdrop-filter: blur(12px);
+  border: 2px solid rgba(76, 175, 80, 0.5);
+  letter-spacing: 0.2px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  max-width: 600px;
+  margin: 0 auto 10px;
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.15);
+}
+
+/* Professional Alert Cards */
+.alert-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(25px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 30px;
+  margin-bottom: 25px;
+  position: relative;
+  overflow: hidden;
+  animation: slideInLeft 0.8s ease-out;
+  box-shadow: var(--card-shadow);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.alert-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+  pointer-events: none;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  animation: rotate 30s linear infinite;
+}
+
+.alert-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(102, 126, 234, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.alert-card.danger {
+  border-left: 4px solid #f44336;
+}
+
+.alert-card.warning {
+  border-left: 4px solid #ffc107;
+}
+
+.alert-card.success {
+  border-left: 4px solid #4facfe;
+}
+
+.alert-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  position: relative;
+  z-index: 10;
+}
+
+.alert-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-right: 15px;
+  text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
+  position: relative;
+  z-index: 10;
+}
+
+.alert-icon.danger {
+  background: var(--danger-gradient);
+  color: #000000;
+}
+
+.alert-icon.warning {
+  background: var(--warning-gradient);
+  color: #000000;
+}
+
+.alert-icon.success {
+  background: var(--success-gradient);
+  color: #000000;
+}
+
+.alert-content {
+  flex: 1;
+  position: relative;
+  z-index: 10;
+}
+
+.alert-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #000000;
+  text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
+  margin-bottom: 5px;
+  letter-spacing: 0.3px;
+}
+
+.alert-message {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #000000;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+/* Professional Section Headers */
+.section-header {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.2) 100%);
+  backdrop-filter: blur(25px);
+  border: 2px solid rgba(76, 175, 80, 0.4);
+  border-radius: 20px;
+  padding: 20px 25px;
+  margin: 25px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  animation: slideInLeft 1s ease-out;
+  box-shadow: 0 15px 35px rgba(76, 175, 80, 0.2);
+}
+
+.section-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  animation: rotate 35s linear infinite;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1B5E20;
+  text-shadow: 0 3px 6px rgba(255, 255, 255, 0.9);
+  position: relative;
+  z-index: 10;
+}
+
+.section-subtitle {
+  position: relative;
+  z-index: 10;
+}
+
+/* Professional Tables */
+.table-container {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.15) 100%);
+  backdrop-filter: blur(25px);
+  border: 2px solid rgba(76, 175, 80, 0.3);
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  animation: fadeInUp 1s ease-out;
+  box-shadow: 0 15px 30px rgba(76, 175, 80, 0.15);
+  margin: 20px 0;
+}
+
+.table-container::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+  animation: rotate 45s linear infinite;
+}
+
+.professional-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  position: relative;
+  z-index: 10;
+}
+
+.professional-table thead th {
+  background: linear-gradient(135deg, #66BB6A 0%, #81C784 100%);
+  color: #000000;
+  font-weight: 900;
+  padding: 15px 12px;
+  text-align: left;
+  font-size: 0.9rem;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  border-bottom: 2px solid rgba(76, 175, 80, 0.4);
+  position: relative;
+  z-index: 10;
+}
+
+.professional-table tbody td {
+  background: rgba(255, 255, 255, 0.08);
+  color: #000000;
+  padding: 12px 10px;
+  border-bottom: 1px solid rgba(76, 175, 80, 0.15);
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 10;
+}
+
+.professional-table tbody tr:hover td {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateX(3px);
+  box-shadow: inset 0 0 15px rgba(76, 175, 80, 0.08);
+}
+
+/* Professional Badges */
+.professional-badge {
+  background: linear-gradient(135deg, #66BB6A 0%, #81C784 100%);
+  color: #000000;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  position: relative;
+  z-index: 10;
+  box-shadow: 0 3px 10px rgba(76, 175, 80, 0.2);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.professional-badge.success {
+  background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.professional-badge.warning {
+  background: linear-gradient(135deg, #FF9800 0%, #FFB74D 100%);
+  box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+}
+
+.professional-badge.danger {
+  background: linear-gradient(135deg, #F44336 0%, #EF5350 100%);
+  box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+}
+
+/* Professional Buttons */
+.professional-btn {
+  background: linear-gradient(135deg, #66BB6A 0%, #81C784 100%);
+  color: #000000;
+  text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
+  border: 2px solid rgba(76, 175, 80, 0.4);
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  box-shadow: 0 6px 15px rgba(76, 175, 80, 0.15);
+}
+
+.professional-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: shimmer 3s linear infinite;
+  border-radius: 10px;
+}
+
+.professional-btn:hover {
+  background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 20px rgba(76, 175, 80, 0.2);
+  border-color: rgba(76, 175, 80, 0.5);
+}
+
+.professional-btn.success {
+  background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+}
+
+.professional-btn.success:hover {
+  background: linear-gradient(135deg, #388E3C 0%, #4CAF50 100%);
+}
+
+.professional-btn.danger {
+  background: linear-gradient(135deg, #FF9800 0%, #FFB74D 100%);
+}
+
+.professional-btn.danger:hover {
+  background: linear-gradient(135deg, #F57C00 0%, #FF9800 100%);
+}
+
+/* Action Buttons Container */
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Empty States */
+.empty-state {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.15) 100%);
+  backdrop-filter: blur(25px);
+  border: 2px solid rgba(76, 175, 80, 0.3);
+  border-radius: 25px;
+  padding: 40px 30px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  animation: fadeInUp 1.2s ease-out;
+  box-shadow: 0 15px 30px rgba(76, 175, 80, 0.15);
+}
+
+.empty-state::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  animation: rotate 40s linear infinite;
+}
+
+.empty-icon {
+  font-size: 3.5rem;
+  color: #1B5E20;
+  text-shadow: 0 3px 6px rgba(255, 255, 255, 0.8);
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.3);
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(76, 175, 80, 0.4);
+  box-shadow: 0 6px 15px rgba(76, 175, 80, 0.15);
+}
+
+.empty-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1B5E20;
+  text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
+  margin-bottom: 15px;
+  position: relative;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.25);
+  padding: 12px 20px;
+  border-radius: 12px;
+  display: inline-block;
+  border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.empty-text {
+  font-size: 1rem;
+  color: #2E7D32;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+  position: relative;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 10px 20px;
+  border-radius: 10px;
+  display: inline-block;
+  border: 1px solid rgba(76, 175, 80, 0.2);
+}
+
+/* Professional Alerts Section */
+.alerts-section {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.2) 100%);
+  backdrop-filter: blur(25px);
+  border: 2px solid rgba(76, 175, 80, 0.4);
+  border-radius: 20px;
+  padding: 25px;
+  margin: 25px 0;
+  position: relative;
+  overflow: hidden;
+  animation: slideInLeft 1s ease-out;
+  box-shadow: 0 15px 35px rgba(76, 175, 80, 0.2);
+}
+
+.alerts-section::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  animation: rotate 35s linear infinite;
+}
+
+.alerts-header {
+  text-align: center;
+  margin-bottom: 30px;
+  position: relative;
+  z-index: 10;
+}
+
+.alerts-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1B5E20;
+  text-shadow: 0 3px 6px rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.4);
+  padding: 15px 20px;
+  border-radius: 15px;
+  backdrop-filter: blur(12px);
+  border: 2px solid rgba(76, 175, 80, 0.5);
+  display: inline-block;
+  box-shadow: 0 8px 20px rgba(76, 175, 80, 0.2);
+}
+
+.alerts-subtitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2E7D32;
+  text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.2);
+  padding: 12px 15px;
+  border-radius: 10px;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  margin-top: 15px;
+  display: inline-block;
+}
+
+.alerts-container {
+  position: relative;
+  z-index: 10;
+}
+
+.alert-tabs {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 30px;
+  justify-content: center;
+}
+
+.alert-tab {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(76, 175, 80, 0.3);
+  padding: 15px 25px;
+  border-radius: 15px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #000000;
+  text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.alert-tab:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(76, 175, 80, 0.2);
+  border-color: rgba(76, 175, 80, 0.5);
+}
+
+.alert-tab.active {
+  background: linear-gradient(135deg, #66BB6A 0%, #81C784 100%);
+  color: #000000;
+  border-color: rgba(76, 175, 80, 0.6);
+}
+
+.professional-table thead th {
+  background: linear-gradient(135deg, #66BB6A 0%, #81C784 100%);
+  color: #000000;
+  border-color: rgba(76, 175, 80, 0.6);
+}
+
+.professional-table tbody td {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(76, 175, 80, 0.2);
+  border-radius: 15px;
+  padding: 10px;
+  position: relative;
+  z-index: 10;
+}
+
+.professional-table tbody td:hover {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(76, 175, 80, 0.3);
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #000000;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 10;
+}
+
+/* Form Styles */
+.alert-form {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(76, 175, 80, 0.2);
+  border-radius: 15px;
+  padding: 25px;
+  position: relative;
+  z-index: 10;
+}
+
+.form-group {
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 10;
+}
+
+.form-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #000000;
+  text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
+  margin-bottom: 8px;
+  position: relative;
+  z-index: 10;
+}
+
+.required {
+  color: #F44336;
+  font-weight: 800;
+}
+
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(76, 175, 80, 0.2);
+  border-radius: 15px;
+  padding: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #000000;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 10;
+}
+
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  outline: none;
+  border-color: rgba(76, 175, 80, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 0 15px rgba(76, 175, 80, 0.08);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+}
+
+/* Responsive Design */
+.dropdown-menu {
+  min-width: 280px !important;
+  max-height: 90vh !important;
+  overflow-y: auto !important;
+  overflow-x: visible !important;
+  z-index: 9999 !important;
+  position: absolute !important;
+  transform: translate3d(0, 0, 0) !important;
+  top: 100% !important;
+  left: auto !important;
+  right: 0 !important;
+  margin-top: 0.75rem !important;
+  border-radius: 12px !important;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.15) !important;
+  border: 2px solid rgba(255, 255, 255, 0.3) !important;
+  backdrop-filter: blur(20px) !important;
+  background: var(--glass-bg) !important;
+  animation: dropdownSlide 0.3s ease-out !important;
+}
+
+@keyframes dropdownSlide {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.8);
+    filter: blur(5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0px);
+  }
+}
+
+.dropdown-item {
+  padding: 12px 20px !important;
+  white-space: nowrap !important;
+  clear: both !important;
+  width: 100% !important;
+  line-height: 1.5 !important;
+  display: block !important;
+  font-weight: 600 !important;
+  color: #000000 !important;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8) !important;
+  transition: all 0.3s ease !important;
+  border-radius: 8px !important;
+  margin: 4px 8px !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(5px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.dropdown-item:hover {
+  background: var(--primary-gradient) !important;
+  color: #000000 !important;
+  text-shadow: 0 2px 4px rgba(255, 255, 255, 0.9) !important;
+  transform: translateX(5px) translateY(-2px) !important;
+  box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3) !important;
+}
+
+.dropdown-header {
+  padding: 15px 20px !important;
+  font-size: 0.9rem !important;
+  margin-bottom: 0 !important;
+  font-weight: 800 !important;
+  background: var(--primary-gradient) !important;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.3) !important;
+  color: #000000 !important;
+  text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8) !important;
+  border-radius: 10px 10px 0 0 !important;
+  position: relative;
+  z-index: 10;
+}
+
+.dropdown-divider {
+  margin: 10px 0 !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  opacity: 0.8 !important;
+}
+
+/* Toast notifications */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+}
+
+.custom-toast {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 15px;
+  box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+  min-width: 300px;
+  animation: slideIn 0.3s ease;
+  position: relative;
+  z-index: 10;
+}
+
+.toast-success {
+  border-left: 4px solid #4facfe;
+}
+
+.toast-error {
+  border-left: 4px solid #f44336;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Popup notifications */
+.popup-container {
+  position: fixed;
+  top: 10px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 9999 !important;
+  width: 90% !important;
+  max-width: 500px !important;
+}
+
+.popup-notification {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 15px;
+  padding: 25px;
+  margin-bottom: 15px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+  animation: popIn 0.3s ease;
+  position: relative;
+  z-index: 10;
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.popup-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #000000;
+  text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
+}
+
+.popup-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #000000;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+.popup-body {
+  padding: 20px 0;
+}
+
+.popup-body p {
+  margin: 0 0 16px 0;
+  color: #000000;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+.popup-btn {
+  background: var(--primary-gradient);
+  color: #000000;
+  text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
+  border: none;
+  padding: 12px 25px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  margin-top: 8px;
+  z-index: 10;
+  position: relative;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+}
+
+.popup-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+}
+
+@keyframes popIn {
+  from {
+    transform: translate(-50%, -20px) scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Toggle Switches */
+.form-check-input {
+  width: 18px;
+  height: 18px;
+  accent-color: #4CAF50;
+  cursor: pointer;
+  border-radius: 3px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.form-check-input:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.form-check-input:checked {
+  accent-color: #4CAF50;
+  border-color: #4CAF50;
+  background: rgba(76, 175, 80, 0.2);
+}
+
+.form-check-input:checked:hover {
+  accent-color: #45a049;
+  border-color: #45a049;
+  background: rgba(69, 160, 73, 0.3);
+}
+</style>
+{% endblock %}
+
+
+{% block content %}
+<!-- Animated Background -->
+<div class="bg-animation">
+  <div class="floating-shape shape1"></div>
+  <div class="floating-shape shape2"></div>
+  <div class="floating-shape shape3"></div>
+  <div class="floating-shape shape4"></div>
+</div>
+
+<!-- Professional Header -->
+<div class="pickups-hero">
+  <div class="hero-title">🚚 Pickup Management</div>
+  <div class="hero-subtitle">Review and approve waste pickup requests with advanced management tools</div>
+</div>
+
+<!-- Pending Pickups Section -->
+<div class="section-header">
+  <div class="section-title">
+    <i class="bi bi-hourglass-split"></i>
+    Pending Pickups
+    {% if pending %}
+      <span class="professional-badge warning">{{ pending|length }}</span>
+    {% endif %}
+  </div>
+  <div class="section-subtitle">
+    {% if pending %}
+      <button class="professional-btn success" onclick="approveAllPickups()">
+        <i class="bi bi-check2-all"></i>
+        Approve All
+      </button>
+    {% endif %}
+  </div>
+</div>
+
+{% if pending %}
+<div class="table-container">
+  <table class="professional-table">
+    <thead>
+      <tr>
+        <th>Request Date</th>
+        <th>Bin ID</th>
+        <th>Requested By</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for pickup in pending %}
+      <tr>
+        <td>{% if pickup.created_at %}{{ pickup.created_at.strftime('%d %b %Y, %I:%M %p') }}{% else %}Pending{% endif %}</td>
+        <td>{{ pickup.bin_id }}</td>
+        <td>{{ pickup.requested_by }}</td>
+        <td>
+          <span class="professional-badge warning">Pending</span>
+        </td>
+        <td>
+          <div class="action-buttons">
+            <button class="professional-btn success" data-pickup-id="{{ pickup._id }}" onclick="approvePickup(this)">
+              <i class="bi bi-check-circle"></i>
+              Approve
+            </button>
+            <button class="professional-btn danger" data-pickup-id="{{ pickup._id }}" onclick="rejectPickup(this)">
+              <i class="bi bi-x-circle"></i>
+              Reject
+            </button>
+            <button class="professional-btn" style="background: linear-gradient(135deg, #42A5F5 0%, #64B5F6 100%);" 
+                    data-username="{{ pickup.requested_by }}" 
+                    onclick="openNotificationModal(this)">
+              <i class="bi bi-envelope"></i>
+              Notify
+            </button>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-icon">
+    <i class="bi bi-check-circle-fill"></i>
+  </div>
+  <div class="empty-title">No Pending Pickups</div>
+  <div class="empty-text">All pickup requests have been processed. Great job!</div>
+</div>
+{% endif %}
+
+<!-- Approved Pickups Section -->
+<div class="section-header">
+  <div class="section-title">
+    <i class="bi bi-check-circle-fill"></i>
+    Recently Approved Pickups
+    {% if approved %}
+      <span class="professional-badge success">{{ approved|length }}</span>
+    {% endif %}
+  </div>
+  <div class="section-subtitle">
+    {% if approved %}
+      <button class="professional-btn success" onclick="collectAllPickups()">
+        <i class="bi bi-check2-all"></i>
+        Collect All
+      </button>
+    {% endif %}
+  </div>
+</div>
+
+{% if approved %}
+<table class="professional-table">
+    <thead>
+      <tr>
+        <th>Request Date</th>
+        <th>Bin ID</th>
+        <th>Requested By</th>
+        <th>Approved Date</th>
+        <th>Approved By</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for pickup in approved %}
+      <tr>
+        <td>{% if pickup.created_at %}{{ pickup.created_at.strftime('%d %b %Y, %I:%M %p') }}{% else %}Pending{% endif %}</td>
+        <td>{{ pickup.bin_id }}</td>
+        <td>{{ pickup.requested_by }}</td>
+        <td>{% if pickup.approved_at %}{{ pickup.approved_at.strftime('%d %b %Y, %I:%M %p') }}{% else %}Pending{% endif %}</td>
+        <td>{{ pickup.approved_by or 'System' }}</td>
+        <td>
+          <div class="action-buttons">
+            <button class="professional-btn success" data-pickup-id="{{ pickup._id }}" onclick="completePickup(this)">
+              <i class="bi bi-check-circle"></i>
+              Collect
+            </button>
+            <button class="professional-btn" style="background: linear-gradient(135deg, #42A5F5 0%, #64B5F6 100%);" 
+                    data-username="{{ pickup.requested_by }}" 
+                    onclick="openNotificationModal(this)">
+              <i class="bi bi-envelope"></i>
+              Notify
+            </button>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-icon">
+    <i class="bi bi-clipboard-x"></i>
+  </div>
+  <div class="empty-title">No Recently Approved Pickups</div>
+  <div class="empty-text">No pickups have been approved yet.</div>
+</div>
+{% endif %}
+
+<div class="mt-4">
+  <div class="alerts-section">
+    <div class="alerts-header">
+      <div class="alerts-title">
+        <i class="bi bi-bell-fill"></i>
+        Create Alerts & Notifications
+      </div>
+      <div class="alerts-subtitle">
+        Send real-time alerts to users and manage system notifications
+      </div>
+    </div>
+    
+    <div class="alerts-container">
+      <div class="alert-tabs">
+        <button class="alert-tab active" id="bin-full-tab" data-bs-toggle="tab" data-bs-target="#binFullAlert" type="button" role="tab">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          <span>Bin Full Alert</span>
+        </button>
+        <button class="alert-tab" id="system-alert-tab" data-bs-toggle="tab" data-bs-target="#systemAlert" type="button" role="tab">
+          <i class="bi bi-info-circle-fill"></i>
+          <span>System Alert</span>
+        </button>
+      </div>    
+
+      <div class="tab-content mt-4" id="alertsTabContent">
+        <!-- Bin Full Alert Tab -->
+        <div class="tab-pane fade show active" id="binFullAlert" role="tabpanel">
+          <form class="alert-form" onsubmit="sendBinFullAlert(event)">
+            <div class="form-group">
+              <label for="binId" class="form-label">
+                <i class="bi bi-trash3"></i>
+                Bin ID <span class="required">*</span>
+              </label>
+              <select class="form-select" id="binId" required>
+                <option value="">-- Select Bin --</option>
+                {% for bin in bins %}
+                  <option value="{{ bin.bin_id }}">
+                     {{ bin.bin_id }} — {{ bin.area_name }}
+                   </option>
+                 {% endfor %}
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="binAlertRecipient" class="form-label">
+                <i class="bi bi-people-fill"></i>
+                Send To <span class="required">*</span>
+              </label>
+              <select class="form-select" id="binAlertRecipient" required>
+                <option value="all">All Users (Broadcast)</option>
+                <optgroup label="Specific Users">
+                  {% for user in users %}
+                    <option value="{{ user.username }}">{{ user.username }} ({{ user.email }})</option>
+                  {% endfor %}
+                </optgroup>
+              </select>
+            </div>
+            <button type="submit" class="professional-btn danger">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+              Send Bin Full Alert
+            </button>
+          </form>
+        </div>
+
+        <!-- System Alert Tab -->
+        <div class="tab-pane fade" id="systemAlert" role="tabpanel">
+          <form class="alert-form" onsubmit="sendSystemAlert(event)">
+            <div class="form-group">
+              <label for="alertTitle" class="form-label">
+                <i class="bi bi-megaphone"></i>
+                Alert Title <span class="required">*</span>
+              </label>
+              <input type="text" class="form-input" id="alertTitle" placeholder="e.g., Maintenance Schedule" required>
+            </div>
+            <div class="form-group">
+              <label for="alertMessage" class="form-label">
+                <i class="bi bi-chat-text"></i>
+                Alert Message <span class="required">*</span>
+              </label>
+              <textarea class="form-textarea" id="alertMessage" rows="4" placeholder="Enter alert message..." required></textarea>
+            </div>
+            <div class="form-group">
+              <label for="systemAlertRecipient" class="form-label">
+                <i class="bi bi-people-fill"></i>
+                Send To <span class="required">*</span>
+              </label>
+              <select class="form-select" id="systemAlertRecipient" required>
+                <option value="all">All Users (Broadcast)</option>
+                <optgroup label="Specific Users">
+                  {% for user in users %}
+                    <option value="{{ user.username }}">{{ user.username }} ({{ user.email }})</option>
+                  {% endfor %}
+                </optgroup>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="alertSeverity" class="form-label">
+                <i class="bi bi-flag"></i>
+                Severity
+              </label>
+              <select class="form-select" id="alertSeverity">
+                <option value="info">
+                  <i class="bi bi-info-circle"></i>
+                  Info
+                </option>
+                <option value="warning">
+                  <i class="bi bi-exclamation-triangle"></i>
+                  Warning
+                </option>
+                <option value="danger">
+                  <i class="bi bi-x-circle"></i>
+                  Danger
+                </option>
+              </select>
+            </div>
+            <button type="submit" class="professional-btn success">
+              <i class="bi bi-send-fill"></i>
+              Send System Alert
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mt-4">
+  <a href="{{ url_for('admin_activity_logs') }}" class="btn btn-outline-secondary">View Activity Logs</a>
+  <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary">← Back to Dashboard</a>
+</div>
+
+<!-- Toast Notification Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Popup Notification Container -->
+<div class="popup-container" id="popupContainer"></div>
+
+<!-- Custom Notification Modal -->
+<div id="notificationModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; backdrop-filter: blur(5px);">
+  <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%); backdrop-filter: blur(25px); border: 2px solid rgba(76, 175, 80, 0.4); border-radius: 25px; padding: 35px; width: 90%; max-width: 550px; box-shadow: 0 25px 60px rgba(0,0,0,0.3);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid rgba(76, 175, 80, 0.3); padding-bottom: 15px;">
+      <h3 style="margin: 0; color: #1B5E20; font-weight: 800; font-size: 1.6rem; text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);">
+        <i class="bi bi-envelope-fill"></i> Send Notification
+      </h3>
+      <button onclick="closeNotificationModal()" style="background: none; border: none; font-size: 2rem; cursor: pointer; color: #1B5E20; line-height: 1; padding: 0; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.3s ease;">×</button>
+    </div>
+    
+    <form id="customNotificationForm" onsubmit="sendCustomNotification(event)">
+      <div class="form-group">
+        <label class="form-label">
+          <i class="bi bi-person-fill"></i>
+          Recipient <span class="required">*</span>
+        </label>
+        <input type="text" id="notificationRecipient" class="form-input" readonly style="background: rgba(76, 175, 80, 0.1); cursor: not-allowed;">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          <i class="bi bi-tag-fill"></i>
+          Notification Title <span class="required">*</span>
+        </label>
+        <input type="text" id="notificationTitle" class="form-input" placeholder="e.g., Pickup Update" required>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          <i class="bi bi-chat-text-fill"></i>
+          Message <span class="required">*</span>
+        </label>
+        <textarea id="notificationMessage" class="form-textarea" rows="4" placeholder="Enter your message..." required></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          <i class="bi bi-flag-fill"></i>
+          Severity
+        </label>
+        <select id="notificationSeverity" class="form-select">
+          <option value="info">Info</option>
+          <option value="success">Success</option>
+          <option value="warning">Warning</option>
+          <option value="danger">Danger</option>
+        </select>
+      </div>
+      
+      <div style="display: flex; gap: 15px; margin-top: 25px;">
+        <button type="submit" class="professional-btn success" style="flex: 1;">
+          <i class="bi bi-send-fill"></i>
+          Send Notification
+        </button>
+        <button type="button" onclick="closeNotificationModal()" class="professional-btn danger" style="flex: 1;">
+          <i class="bi bi-x-circle"></i>
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+// Tab switching functionality
+document.addEventListener('DOMContentLoaded', function() {
+  // Get all tab buttons and tab panes
+  const tabButtons = document.querySelectorAll('.alert-tab');
+  const tabPanes = document.querySelectorAll('.tab-pane');
+  
+  // Add click event listeners to tab buttons
+  tabButtons.forEach(button => {
+    button.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      // Remove active class from all tabs and panes
+      tabButtons.forEach(btn => btn.classList.remove('active'));
+      tabPanes.forEach(pane => {
+        pane.classList.remove('show', 'active');
+      });
+      
+      // Add active class to clicked tab
+      this.classList.add('active');
+      
+      // Show corresponding tab pane
+      const targetId = this.getAttribute('data-bs-target');
+      const targetPane = document.querySelector(targetId);
+      if (targetPane) {
+        targetPane.classList.add('show', 'active');
+      }
+    });
+  });
+});
+
+// Toggle functionality for pending pickups
+function toggleAllPending() {
+  const selectAll = document.getElementById('selectAllPending');
+  const checkboxes = document.querySelectorAll('[id^="pending-"]');
+  checkboxes.forEach(checkbox => {
+    checkbox.checked = selectAll.checked;
+  });
+}
+
+function togglePending(checkbox) {
+  // Update select all checkbox state
+  const selectAll = document.getElementById('selectAllPending');
+  const allCheckboxes = document.querySelectorAll('[id^="pending-"]');
+  const allChecked = Array.from(allCheckboxes).every(cb => cb.checked);
+  selectAll.checked = allChecked;
+  selectAll.indeterminate = Array.from(allCheckboxes).some(cb => cb.checked) && !allChecked;
+}
+
+// Toggle functionality for approved pickups
+function toggleAllApproved() {
+  const selectAll = document.getElementById('selectAllApproved');
+  const checkboxes = document.querySelectorAll('[id^="approved-"]');
+  checkboxes.forEach(checkbox => {
+    checkbox.checked = selectAll.checked;
+  });
+}
+
+function toggleApproved(checkbox) {
+  // Update select all checkbox state
+  const selectAll = document.getElementById('selectAllApproved');
+  const allCheckboxes = document.querySelectorAll('[id^="approved-"]');
+  const allChecked = Array.from(allCheckboxes).every(cb => cb.checked);
+  selectAll.checked = allChecked;
+  selectAll.indeterminate = Array.from(allCheckboxes).some(cb => cb.checked) && !allChecked;
+}
+
+// Custom toast notification function
+function showToast(message, type = 'success') {
+  const toastContainer = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `custom-toast toast-${type}`;
+  
+  const icon = type === 'success' ? '✅' : '❌';
+  toast.innerHTML = `
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span style="font-size: 1.2rem;">${icon}</span>
+      <div>
+        <strong>${type === 'success' ? 'Success' : 'Error'}</strong>
+        <div style="font-size: 0.9rem; color: #666; margin-top: 2px;">${message}</div>
+      </div>
+    </div>
+  `;
+  
+  toastContainer.appendChild(toast);
+  
+  // Auto remove after 4 seconds
+  setTimeout(() => {
+    toast.style.animation = 'slideIn 0.3s ease reverse';
+    setTimeout(() => {
+      toastContainer.removeChild(toast);
+    }, 300);
+  }, 4000);
+}
+
+// Popup notification function
+function showPopupNotification(title, message) {
+  const popupContainer = document.getElementById('popupContainer');
+  const popup = document.createElement('div');
+  popup.className = 'popup-notification';
+  popup.id = 'notificationPopup'; // Add ID for easier targeting
+  popup.innerHTML = `
+    <div class="popup-content">
+      <div class="popup-header">
+        <h4>🔔 ${title}</h4>
+        <button class="popup-close" onclick="closePopup(this)">×</button>
+      </div>
+      <div class="popup-body">
+        <p>${message}</p>
+      <button class="popup-btn" onclick="closePopup(this)">OK</button>
+      </div>
+    </div>
+  `;
+  
+  popupContainer.appendChild(popup);
+  
+  // No auto-dismiss - popup only closes when user clicks OK or close button
+}
+
+// Function to manually close popup
+function closePopup(button) {
+  // Try multiple methods to find the popup
+  let popup = button.closest('.popup-notification');
+  
+  // If that doesn't work, try by ID
+  if (!popup) {
+    popup = document.getElementById('notificationPopup');
+  }
+  
+  // If still not found, try parent approach
+  if (!popup) {
+    popup = button.parentElement;
+    while (popup && !popup.classList.contains('popup-notification')) {
+      popup = popup.parentElement;
+    }
+  }
+  
+  const popupContainer = document.getElementById('popupContainer');
+  
+  console.log('Found popup:', popup); // Debug log
+  
+  // Remove popup with animation
+  if (popup) {
+    popup.style.animation = 'fadeOut 0.3s ease';
+    setTimeout(() => {
+      if (popup && popup.parentElement) {
+        popupContainer.removeChild(popup);
+      }
+    }, 300);
+  }
+}
+
+function approvePickup(button) {
+  const pickupId = button.getAttribute('data-pickup-id');
+  
+  fetch(`/admin/approve-pickup/${pickupId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.message) {
+      showToast('Pickup approved successfully!');
+      location.reload();
+    } else {
+      showToast('Error: ' + (data.error || 'Failed to approve pickup'), 'error');
+    }
+  })
+  .catch(error => {
+    showToast('Error: ' + error, 'error');
+  });
+}
+
+function rejectPickup(button) {
+  const pickupId = button.getAttribute('data-pickup-id');
+  
+  if (!confirm('Are you sure you want to reject this pickup request?')) {
+    return;
+  }
+  
+  fetch(`/admin/reject-pickup/${pickupId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.message) {
+      showToast('Pickup rejected successfully!');
+      location.reload();
+    } else {
+      showToast('Error: ' + (data.error || 'Failed to reject pickup'), 'error');
+    }
+  })
+  .catch(error => {
+    showToast('Error: ' + error, 'error');
+  });
+}
+
+function sendBinFullAlert(event) {
+  event.preventDefault();
+  const binId = document.getElementById('binId').value;
+  const recipient = document.getElementById('binAlertRecipient').value;
+  
+  // Validation
+  if (!binId || binId.trim() === '') {
+    showToast('Please select a bin ID', 'error');
+    return;
+  }
+  
+  if (!recipient || recipient.trim() === '') {
+    showToast('Please select a recipient', 'error');
+    return;
+  }
+  
+  console.log('Sending bin full alert for bin:', binId, 'to:', recipient);
+  
+  fetch(`/admin/alert-bin-full/${binId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      recipient: recipient
+    })
+  })
+  .then(response => {
+    console.log('Response status:', response.status);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+  })
+  .then(data => {
+    console.log('Response data:', data);
+    if (data.message) {
+      // Show success toast notification
+      showToast('Bin full alert sent successfully!');
+      document.getElementById('binId').value = '';
+      document.getElementById('binAlertRecipient').value = 'all';
+      
+      // Show popup notification at top of page
+      const recipientText = recipient === 'all' ? 'all users' : recipient;
+      showPopupNotification('Bin Full Alert Sent', `Alert for bin ${binId} has been sent to ${recipientText} successfully!`);
+      
+      // No auto-reload - popup stays until user clicks OK
+    } else {
+      showToast('Error: ' + (data.error || 'Failed to send alert'), 'error');
+    }
+  })
+  .catch(error => {
+    console.error('Fetch error:', error);
+    showToast('Error: ' + error.message, 'error');
+  });
+}
+
+function sendSystemAlert(event) {
+  event.preventDefault();
+  const title = document.getElementById('alertTitle').value;
+  const message = document.getElementById('alertMessage').value;
+  const severity = document.getElementById('alertSeverity').value;
+  const recipient = document.getElementById('systemAlertRecipient').value;
+  
+  // Validation
+  if (!title || title.trim() === '') {
+    showToast('Please enter an alert title', 'error');
+    return;
+  }
+  
+  if (!message || message.trim() === '') {
+    showToast('Please enter an alert message', 'error');
+    return;
+  }
+  
+  if (!recipient || recipient.trim() === '') {
+    showToast('Please select a recipient', 'error');
+    return;
+  }
+  
+  fetch('/admin/system-alert', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      title: title,
+      message: message,
+      severity: severity,
+      recipient: recipient
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.message) {
+      showToast('System alert sent successfully!');
+      document.getElementById('alertTitle').value = '';
+      document.getElementById('alertMessage').value = '';
+      document.getElementById('alertSeverity').value = 'info';
+      document.getElementById('systemAlertRecipient').value = 'all';
+      
+      // Show popup notification
+      const recipientText = recipient === 'all' ? 'all users' : recipient;
+      showPopupNotification('System Alert Sent', `Your alert "${title}" has been sent to ${recipientText} successfully!`);
+    } else {
+      showToast('Error: ' + (data.error || 'Failed to send alert'), 'error');
+    }
+  })
+  .catch(error => {
+    showToast('Error: ' + error.message, 'error');
+  });
+}
+
+function approveAllPickups() {
+  // Show confirmation popup
+  if (!confirm('Are you sure you want to approve ALL pending pickups? This will move all pending requests to the approved section.')) {
+    return;
+  }
+
+  // Get all pending pickup IDs from approve buttons
+  const approveButtons = document.querySelectorAll('button[onclick*="approvePickup"]');
+  const pickupIds = Array.from(approveButtons).map(btn => btn.getAttribute('data-pickup-id'));
+  
+  if (pickupIds.length === 0) {
+    showToast('No pending pickups to approve', 'error');
+    return;
+  }
+
+  // Approve all pickups in parallel
+  const approvePromises = pickupIds.map(pickupId => 
+    fetch(`/admin/approve-pickup/${pickupId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then(response => response.json())
+  );
+
+  Promise.all(approvePromises)
+    .then(results => {
+      const successful = results.filter(r => r.message).length;
+      const failed = results.filter(r => r.error).length;
+      
+      if (failed === 0) {
+        showToast(`Successfully approved all ${successful} pickups!`);
+      } else {
+        showToast(`Approved ${successful} pickups successfully. ${failed} failed.`, 'error');
+      }
+      
+      // Reload page after a short delay to show the toast
+      setTimeout(() => {
+        location.reload();
+      }, 2000);
+    })
+    .catch(error => {
+      showToast('Error approving pickups: ' + error.message, 'error');
+    });
+}
+
+function completePickup(button) {
+  const pickupId = button.getAttribute('data-pickup-id');
+  
+  // Show confirmation popup
+  if (!confirm('Are you sure you want to mark this pickup as collected? This will notify users that the bin has been emptied.')) {
+    return;
+  }
+
+  fetch(`/admin/complete-pickup/${pickupId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.message) {
+      // Show success toast notification
+      showToast('Pickup completed successfully! Users have been notified that the bin has been collected.');
+      location.reload();
+    } else {
+      showToast('Error: ' + (data.error || 'Failed to complete pickup'), 'error');
+    }
+  })
+  .catch(error => {
+    showToast('Error: ' + error.message, 'error');
+  });
+}
+
+// Function to collect all approved pickups
+function collectAllPickups() {
+  // Show confirmation popup
+  if (!confirm('Are you sure you want to collect ALL approved pickups? This will mark all pending collections as completed and notify users.')) {
+    return;
+  }
+
+  // Get all approved pickup IDs
+  const collectButtons = document.querySelectorAll('button[data-pickup-id]');
+  const pickupIds = Array.from(collectButtons).map(btn => btn.getAttribute('data-pickup-id'));
+  
+  if (pickupIds.length === 0) {
+    showToast('No approved pickups to collect', 'error');
+    return;
+  }
+
+  // Collect all pickups in parallel
+  const collectPromises = pickupIds.map(pickupId => 
+    fetch(`/admin/complete-pickup/${pickupId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then(response => response.json())
+  );
+
+  Promise.all(collectPromises)
+    .then(results => {
+      const successful = results.filter(r => r.message).length;
+      const failed = results.filter(r => r.error).length;
+      
+      if (failed === 0) {
+        showToast(`Successfully collected all ${successful} pickups! Users have been notified.`);
+      } else {
+        showToast(`Collected ${successful} pickups successfully. ${failed} failed.`, 'error');
+      }
+      
+      // Reload page after a short delay to show the toast
+      setTimeout(() => {
+        location.reload();
+      }, 2000);
+    })
+    .catch(error => {
+      showToast('Error collecting pickups: ' + error.message, 'error');
+    });
+}
+
+// Open notification modal
+function openNotificationModal(button) {
+  const username = button.getAttribute('data-username');
+  document.getElementById('notificationRecipient').value = username;
+  document.getElementById('notificationTitle').value = '';
+  document.getElementById('notificationMessage').value = '';
+  document.getElementById('notificationSeverity').value = 'info';
+  document.getElementById('notificationModal').style.display = 'block';
+}
+
+// Close notification modal
+function closeNotificationModal() {
+  document.getElementById('notificationModal').style.display = 'none';
+}
+
+// Send custom notification
+function sendCustomNotification(event) {
+  event.preventDefault();
+  
+  const recipient = document.getElementById('notificationRecipient').value;
+  const title = document.getElementById('notificationTitle').value;
+  const message = document.getElementById('notificationMessage').value;
+  const severity = document.getElementById('notificationSeverity').value;
+  
+  // Validation
+  if (!recipient || !title || !message) {
+    showToast('Please fill in all required fields', 'error');
+    return;
+  }
+  
+  fetch('/admin/send-notification', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      recipient: recipient,
+      title: title,
+      message: message,
+      notification_type: 'custom',
+      severity: severity
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.message) {
+      showToast(`Notification sent successfully to ${recipient}!`);
+      closeNotificationModal();
+      
+      // Show popup notification
+      showPopupNotification('Notification Sent', `Your message "${title}" has been sent to ${recipient} successfully!`);
+    } else {
+      showToast('Error: ' + (data.error || 'Failed to send notification'), 'error');
+    }
+  })
+  .catch(error => {
+    showToast('Error: ' + error.message, 'error');
+  });
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', function(event) {
+  const modal = document.getElementById('notificationModal');
+  if (event.target === modal) {
+    closeNotificationModal();
+  }
+});
+
+</script>
+{% endblock %}
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>

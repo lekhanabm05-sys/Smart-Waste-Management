@@ -1,0 +1,93 @@
+<!-- templates/reports.html -->
+{% extends "base.html" %}
+{% block title %}Reports – Smart Waste{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Reports</h2>
+    <div class="text-muted small">Export and review data</div>
+  </div>
+
+  <div class="card report-card mb-4">
+    <div class="card-body">
+      <p class="lead mb-2">Download JSON summaries for further analysis or preview results below.</p>
+      <div class="d-flex gap-2 report-actions">
+        <button id="download" class="btn btn-primary"><i class="bi bi-download me-2"></i>Download Summary JSON</button>
+        <button id="preview" class="btn btn-outline-secondary"><i class="bi bi-eye me-2"></i>Preview</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="previewArea" class="card json-preview d-none mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Summary Preview</h5>
+      <div id="previewContent" class="overflow-auto" style="max-height:320px"><pre class="mb-0"></pre></div>
+    </div>
+  </div>
+
+  <div id="tableArea" class="card d-none report-table-card">
+    <div class="card-body">
+      <h5 class="card-title">Key Metrics</h5>
+      <div class="table-responsive">
+        <table class="table table-striped report-table mb-0">
+          <thead><tr><th>Metric</th><th>Value</th></tr></thead>
+          <tbody id="metricsBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+async function fetchSummary() {
+  const res = await fetch('/api/reports/summary');
+  if (!res.ok) throw new Error('Network response was not ok');
+  return res.json();
+}
+
+document.getElementById('download').addEventListener('click', async () => {
+  try {
+    const data = await fetchSummary();
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'report_summary.json'; a.click();
+    URL.revokeObjectURL(url);
+  } catch (e) {
+    alert('Failed to download summary: ' + e.message);
+  }
+});
+
+document.getElementById('preview').addEventListener('click', async () => {
+  const area = document.getElementById('previewArea');
+  const pre = area.querySelector('pre');
+  try {
+    const data = await fetchSummary();
+    pre.textContent = JSON.stringify(data, null, 2);
+    area.classList.remove('d-none');
+    populateMetrics(data);
+  } catch (e) {
+    pre.textContent = 'Error fetching data: ' + e.message;
+    area.classList.remove('d-none');
+  }
+});
+
+function populateMetrics(data) {
+  const tbody = document.getElementById('metricsBody');
+  tbody.innerHTML = '';
+  if (typeof data === 'object' && data !== null) {
+    Object.entries(data).slice(0,20).forEach(([k,v]) => {
+      let val = (typeof v === 'object') ? JSON.stringify(v) : String(v);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${k}</td><td>${val}</td>`;
+      tbody.appendChild(tr);
+    });
+    document.getElementById('tableArea').classList.remove('d-none');
+  } else {
+    document.getElementById('tableArea').classList.add('d-none');
+  }
+}
+
+</script>
+
+{% endblock %}

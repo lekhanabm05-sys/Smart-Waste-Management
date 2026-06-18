@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Waste - Smart Waste Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+          --primary-gradient: linear-gradient(135deg, #81C784 0%, #A5D6A7 100%);
+          --secondary-gradient: linear-gradient(135deg, #C8E6C9 0%, #E8F5E8 100%);
+          --success-gradient: linear-gradient(135deg, #66BB6A 0%, #81C784 100%);
+          --warning-gradient: linear-gradient(135deg, #FF9800 0%, #FFB74D 100%);
+          --danger-gradient: linear-gradient(135deg, #F44336 0%, #EF5350 100%);
+          --glass-bg: rgba(255, 255, 255, 0.3);
+          --glass-border: rgba(255, 255, 255, 0.4);
+          --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+          background: linear-gradient(135deg, #E8F5E8 0%, #C8E6C9 50%, #A5D6A7 100%);
+          background-attachment: fixed;
+          background-size: cover;
+          min-height: 100vh;
+          position: relative;
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+          color: #000000;
+          overflow-x: hidden;
+        }
+
+        body::before {
+          content: '';
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(135deg, #E8F5E8 0%, #C8E6C9 50%, #A5D6A7 100%);
+          z-index: -2;
+        }
+
+        body::after {
+          content: '';
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: radial-gradient(circle at 20% 80%, rgba(129, 199, 132, 0.3) 0%, transparent 50%),
+                      radial-gradient(circle at 80% 20%, rgba(165, 214, 167, 0.3) 0%, transparent 50%),
+                      radial-gradient(circle at 40% 60%, rgba(200, 230, 201, 0.3) 0%, transparent 50%);
+          z-index: -1;
+          animation: backgroundShift 20s ease-in-out infinite;
+        }
+
+        @keyframes backgroundShift {
+          0%, 100% {
+            transform: translateX(0) translateY(0);
+          }
+          25% {
+            transform: translateX(-20px) translateY(-10px);
+          }
+          50% {
+            transform: translateX(20px) translateY(10px);
+          }
+          75% {
+            transform: translateX(-10px) translateY(5px);
+          }
+        }
+
+        @keyframes fadeInUp {
+          0% {
+            opacity: 0;
+            transform: translateY(50px) scale(0.8);
+            filter: blur(10px);
+          }
+          50% {
+            opacity: 0.5;
+            transform: translateY(25px) scale(0.9);
+            filter: blur(5px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            filter: blur(0px);
+          }
+        }
+
+        @keyframes slideInLeft {
+          0% {
+            opacity: 0;
+            transform: translateX(-100px) rotateY(-10deg);
+          }
+          100% {
+            opacity: 1;
+            transform: translateX(0) rotateY(0deg);
+          }
+        }
+
+        @keyframes zoomIn {
+          0% {
+            opacity: 0;
+            transform: scale(0.3) rotate(180deg);
+          }
+          50% {
+            opacity: 0.7;
+            transform: scale(0.6) rotate(90deg);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1) rotate(0deg);
+          }
+        }
+
+        @keyframes pulse {
+          0%, 100% {
+            transform: scale(1);
+            opacity: 1;
+          }
+          50% {
+            transform: scale(1.05);
+            opacity: 0.8;
+          }
+        }
+
+        @keyframes shimmer {
+          0% {
+            background-position: -200% 0;
+          }
+          100% {
+            background-position: 200% 0;
+          }
+        }
+
+        /* Animated Background */
+        .bg-animation {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: -1;
+          overflow: hidden;
+        }
+
+        .floating-shape {
+          position: absolute;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(5px);
+          animation: float 20s infinite ease-in-out;
+        }
+
+        .shape1 {
+          width: 300px;
+          height: 300px;
+          top: -150px;
+          left: -150px;
+          animation-delay: 0s;
+        }
+
+        .shape2 {
+          width: 200px;
+          height: 200px;
+          top: 50%;
+          right: -100px;
+          animation-delay: 3s;
+        }
+
+        .shape3 {
+          width: 150px;
+          height: 150px;
+          bottom: -75px;
+          left: 30%;
+          animation-delay: 6s;
+        }
+
+        .shape4 {
+          width: 250px;
+          height: 250px;
+          top: 20%;
+          left: 60%;
+          animation-delay: 9s;
+        }
+
+        @keyframes float {
+          0%, 100% {
+            transform: translateY(0px) rotate(0deg);
+            opacity: 0.3;
+          }
+          25% {
+            transform: translateY(-30px) rotate(90deg);
+            opacity: 0.5;
+          }
+          50% {
+            transform: translateY(20px) rotate(180deg);
+            opacity: 0.3;
+          }
+          75% {
+            transform: translateY(-20px) rotate(270deg);
+            opacity: 0.5;
+          }
+        }
+
+        /* Upload Container */
+        .upload-container {
+          max-width: 900px;
+          margin: 40px auto;
+          padding: 0 20px;
+        }
+
+        /* Upload Card */
+        .upload-card {
+          background: var(--glass-bg);
+          backdrop-filter: blur(20px);
+          border: 1px solid var(--glass-border);
+          border-radius: 20px;
+          padding: 50px;
+          color: #000000;
+          box-shadow: var(--card-shadow);
+          position: relative;
+          overflow: hidden;
+          animation: fadeInUp 1.2s ease-out;
+        }
+
+        .upload-card::before {
+          content: '';
+          position: absolute;
+          top: -50%;
+          right: -50%;
+          width: 200%;
+          height: 200%;
+          background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+          animation: rotate 30s linear infinite;
+        }
+
+        /* Header */
+        .upload-header {
+          text-align: center;
+          margin-bottom: 40px;
+          position: relative;
+          z-index: 10;
+        }
+
+        .upload-title {
+          font-size: 2.5rem;
+          font-weight: 800;
+          margin-bottom: 10px;
+          color: #000000;
+          text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
+          position: relative;
+          z-index: 10;
+        }
+
+        .upload-subtitle {
+          font-size: 1.1rem;
+          opacity: 1;
+          color: #000000;
+          text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+          position: relative;
+          z-index: 10;
+        }
+
+        /* Form Styles */
+        .upload-form {
+          position: relative;
+          z-index: 10;
+        }
+
+        .form-group {
+          margin-bottom: 30px;
+        }
+
+        .form-label {
+          font-weight: 600;
+          margin-bottom: 12px;
+          display: block;
+          font-size: 1rem;
+          color: #000000;
+          text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        .form-control {
+          background: rgba(255, 255, 255, 0.1);
+          border: 2px solid rgba(255, 255, 255, 0.3);
+          border-radius: 15px;
+          padding: 18px;
+          color: #000000;
+          font-size: 1rem;
+          transition: all 0.3s ease;
+          backdrop-filter: blur(10px);
+        }
+
+        .form-control:focus {
+          outline: none;
+          border-color: rgba(255, 255, 255, 0.6);
+          background: rgba(255, 255, 255, 0.2);
+          box-shadow: 0 0 0 4px rgba(55, 71, 79, 0.3);
+          transform: translateY(-2px);
+        }
+
+        .form-control::placeholder {
+          color: rgba(0, 0, 0, 0.6);
+        }
+
+        .form-select {
+          background: rgba(255, 255, 255, 0.1);
+          border: 2px solid rgba(255, 255, 255, 0.3);
+          border-radius: 15px;
+          padding: 18px;
+          color: #000000;
+          font-size: 1rem;
+          transition: all 0.3s ease;
+          backdrop-filter: blur(10px);
+        }
+
+        .form-select:focus {
+          outline: none;
+          border-color: rgba(255, 255, 255, 0.6);
+          background: rgba(255, 255, 255, 0.2);
+          box-shadow: 0 0 0 4px rgba(55, 71, 79, 0.3);
+          transform: translateY(-2px);
+        }
+
+        .form-select option {
+          background: #333;
+          color: white;
+        }
+
+        /* Submit Button */
+        .submit-btn {
+          width: 100%;
+          padding: 18px;
+          background: var(--primary-gradient);
+          border: none;
+          border-radius: 15px;
+          color: #000000;
+          font-size: 1.1rem;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          position: relative;
+          overflow: hidden;
+          box-shadow: 0 4px 15px rgba(55, 71, 79, 0.3);
+          text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        .submit-btn::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+          transition: left 0.5s ease;
+        }
+
+        .submit-btn:hover::before {
+          left: 100%;
+        }
+
+        .submit-btn:hover {
+          transform: translateY(-3px) scale(1.02);
+          box-shadow: 0 8px 25px rgba(55, 71, 79, 0.4);
+          color: #000000;
+        }
+
+        /* Success Alert */
+        .success-alert {
+          background: var(--glass-bg);
+          backdrop-filter: blur(20px);
+          border: 1px solid var(--glass-border);
+          border-radius: 15px;
+          padding: 20px;
+          color: #000000;
+          margin-bottom: 20px;
+          text-align: center;
+          animation: slideInLeft 0.8s ease-out;
+          box-shadow: var(--card-shadow);
+        }
+
+        /* Error Alert */
+        .error-alert {
+          background: var(--glass-bg);
+          backdrop-filter: blur(20px);
+          border: 1px solid var(--glass-border);
+          border-radius: 15px;
+          padding: 20px;
+          color: #000000;
+          margin-bottom: 20px;
+          text-align: center;
+          animation: slideInLeft 0.8s ease-out;
+          box-shadow: var(--card-shadow);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+          .upload-container {
+            padding: 20px 15px;
+          }
+
+          .upload-card {
+            padding: 30px 20px;
+          }
+
+          .upload-title {
+            font-size: 2rem;
+          }
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+    <!-- Animated Background -->
+    <div class="bg-animation">
+      <div class="floating-shape shape1"></div>
+      <div class="floating-shape shape2"></div>
+      <div class="floating-shape shape3"></div>
+      <div class="floating-shape shape4"></div>
+    </div>
+
+    <div class="upload-container">
+      <div class="upload-card">
+        <!-- Header -->
+        <div class="upload-header">
+          <h1 class="upload-title">📸 Upload Waste Image</h1>
+          <p class="upload-subtitle">AI-powered waste classification for smarter recycling</p>
+        </div>
+
+        {% if success %}
+        <div class="success-alert">
+          <i class="bi bi-check-circle-fill me-2"></i>
+          {{ success }}
+        </div>
+        {% endif %}
+
+        {% if error %}
+        <div class="error-alert">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>
+          {{ error }}
+        </div>
+        {% endif %}
+
+        <!-- Simple HTML Form (no JavaScript) -->
+        <form action="{{ url_for('predict') }}" method="POST" enctype="multipart/form-data" class="upload-form">
+          <div class="form-group">
+            <label for="image" class="form-label">
+              <i class="bi bi-image me-2"></i>Select Waste Image
+            </label>
+            <input type="file" class="form-control" id="image" name="image" required accept="image/*">
+            <small style="opacity: 0.7; font-size: 0.9rem; display: block; margin-top: 5px;">
+              Supported formats: JPG, PNG, GIF. Maximum size: 10MB
+            </small>
+          </div>
+
+          <div class="form-group">
+            <label for="bin_id" class="form-label">
+              <i class="bi bi-tag me-2"></i>Select Bin (Optional)
+            </label>
+            <select class="form-select" id="bin_id" name="bin_id">
+              <option value="">-- Select Bin (Optional) --</option>
+              {% for bin in bins %}
+                <option value="{{ bin.bin_id }}">
+                  {{ bin.bin_id }} — {{ bin.area_name }}
+                </option>
+              {% endfor %}
+            </select>
+            <small style="opacity: 0.7; font-size: 0.9rem; display: block; margin-top: 5px;">
+              Associate waste with a specific bin to track fill levels
+            </small>
+          </div>
+
+          <button type="submit" class="submit-btn">
+            <i class="bi bi-cloud-upload me-2"></i>Upload & Classify
+          </button>
+        </form>
+      </div>
+    </div>
+
+</body>
+</html>
